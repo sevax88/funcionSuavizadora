@@ -32,18 +32,13 @@
         android:layout_marginBottom="15dp"
     />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/candidato"
-        android:text="candidato = "
-    />
+
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/top"
-        android:text="top = "
+        android:id="@+id/toptv"
+
 
     />
 

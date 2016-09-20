@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            int top = 0;
+                            int top = 110;
                             for (int i=0;i<list.size();i++){
                                 Beacon beacon = list.get(i);
                                 List<Integer> reads2 = readsBc.get(beacon.getMinor());
@@ -69,27 +69,29 @@ public class MainActivity extends AppCompatActivity {
                                 readsBc.remove(beacon.getMinor());
                                 readsBc.put(beacon.getMinor(),reads2);
                                 if (beacon.getMinor() == 28695) {
-                                    rssiBeacon1.setText(String.valueOf(beacon.getRssi() * (-1)));
-                                    beaconGanador = "amarillomedio";
+                                    rssiBeacon1.setText(String.valueOf(reads2.get(reads2.size()-1)));
                                 }
                                 if (beacon.getMinor()==28617) {
-                                    rssiBeacon2.setText(String.valueOf(beacon.getRssi() * (-1)));
-                                    beaconGanador = "amarillocompu";
+                                    rssiBeacon2.setText(String.valueOf(reads2.get(reads2.size()-1)));
                                 }
                                 if (beacon.getMinor()==1731) {
-                                    rssiBeacon3.setText(String.valueOf(beacon.getRssi() * (-1)));
-                                    beaconGanador = "remolachamedio";
+                                    rssiBeacon3.setText(String.valueOf(reads2.get(reads2.size()-1)));
                                 }
                                 try{
-                                    if(reads2.get(2)>top){
-                                        toptv.setText(beacon.getMinor() + " - " + beaconGanador);
-                                        top = reads2.get(2);
+                                    if(reads2.get(2)<top){
+                                        if (beacon.getMinor()==28695)
+                                            beaconGanador = "amarillopared";
+                                        if (beacon.getMinor()== 28617)
+                                            beaconGanador = "amarillopared";
+                                        else beaconGanador = "remolachamedio";
+                                        toptv.setText("ganador : " + beaconGanador);
+                                        top = reads2.get(2) ;
                                     }
                                 }catch (Exception e){
 
                                 }
                             }
-                            toptv.setText(String.valueOf(top));
+//                            toptv.setText(String.valueOf(top));
 
                         }
                     });
@@ -112,8 +114,7 @@ public class MainActivity extends AppCompatActivity {
         rssiBeacon1 = (TextView)findViewById(R.id.rssiBeacon1);
         rssiBeacon2 = (TextView)findViewById(R.id.rssiBeacon2);
         rssiBeacon3 = (TextView)findViewById(R.id.rssiBeacon3);
-        candidato = (TextView)findViewById(R.id.candidato);
-        toptv = (TextView)findViewById(R.id.top);
+        toptv = (TextView)findViewById(R.id.toptv);
     }
 
     @Override
