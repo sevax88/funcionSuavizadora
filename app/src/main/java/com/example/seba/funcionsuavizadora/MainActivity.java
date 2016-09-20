@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private Region region;
     private int listenerCount = 0;
     private Map<Integer,List<Integer>> readsBc;
+    private String beaconGanador;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         beaconManager.setRangingListener(new BeaconManager.RangingListener() {
             @Override
             public void onBeaconsDiscovered(Region region, final List<Beacon> list) {
+                Log.v("onBeaconDiscover","se descubrio un beacon");
                 if (!list.isEmpty()) {
                     Log.v("entrada al listener", String.valueOf(listenerCount));
                     listenerCount++;
@@ -66,22 +68,28 @@ public class MainActivity extends AppCompatActivity {
                                 }
                                 readsBc.remove(beacon.getMinor());
                                 readsBc.put(beacon.getMinor(),reads2);
-                                if (beacon.getMinor() == 52909)
-                                    rssiBeacon1.setText((beacon.getRssi()*(-1)));
-                                if (beacon.getMinor()==27802)
-                                    rssiBeacon2.setText((beacon.getRssi()*(-1)));
-                                if (beacon.getMinor()==25989)
-                                    rssiBeacon3.setText((beacon.getRssi()*(-1)));
+                                if (beacon.getMinor() == 28695) {
+                                    rssiBeacon1.setText(String.valueOf(beacon.getRssi() * (-1)));
+                                    beaconGanador = "amarillomedio";
+                                }
+                                if (beacon.getMinor()==28617) {
+                                    rssiBeacon2.setText(String.valueOf(beacon.getRssi() * (-1)));
+                                    beaconGanador = "amarillocompu";
+                                }
+                                if (beacon.getMinor()==1731) {
+                                    rssiBeacon3.setText(String.valueOf(beacon.getRssi() * (-1)));
+                                    beaconGanador = "remolachamedio";
+                                }
                                 try{
                                     if(reads2.get(2)>top){
-                                        toptv.setText(beacon.getMinor());
+                                        toptv.setText(beacon.getMinor() + " - " + beaconGanador);
                                         top = reads2.get(2);
                                     }
                                 }catch (Exception e){
 
                                 }
                             }
-                            toptv.setText(top);
+                            toptv.setText(String.valueOf(top));
 
                         }
                     });
@@ -95,9 +103,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void fillMap() {
         readsBc = new HashMap<>();
-        readsBc.put(52909,new ArrayList<Integer>());     //minor del candy1
-        readsBc.put(27802,new ArrayList<Integer>());     //minor del candy2
-        readsBc.put(25989,new ArrayList<Integer>());     //minor del remolacha creo
+        readsBc.put(28695,new ArrayList<Integer>());     //minor del lemon1
+        readsBc.put(28617,new ArrayList<Integer>());     //minor del lemon2
+        readsBc.put(1731,new ArrayList<Integer>());     //minor del remolacha1
     }
 
     private void initViews() {
