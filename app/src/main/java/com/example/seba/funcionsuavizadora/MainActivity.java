@@ -88,14 +88,10 @@ public class MainActivity extends AppCompatActivity {
                                         top = reads2.get(2) ;
                                     }
                                 }catch (Exception e){
-
                                 }
                             }
-//                            toptv.setText(String.valueOf(top));
-
                         }
                     });
-
                     // TODO: update the UI here
                 }
             }
