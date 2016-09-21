@@ -69,21 +69,22 @@ public class MainActivity extends AppCompatActivity {
                                 readsBc.remove(beacon.getMinor());
                                 readsBc.put(beacon.getMinor(),reads2);
                                 if (beacon.getMinor() == 28695) {
-                                    rssiBeacon1.setText(String.valueOf(reads2.get(reads2.size()-1)));
+                                    rssiBeacon1.setText("amarilloCompuEscritorio = " + String.valueOf(reads2.get(reads2.size()-1)));
                                 }
                                 if (beacon.getMinor()==28617) {
-                                    rssiBeacon2.setText(String.valueOf(reads2.get(reads2.size()-1)));
+                                    rssiBeacon2.setText("amarillopuerta = " + String.valueOf(reads2.get(reads2.size()-1)));
                                 }
                                 if (beacon.getMinor()==1731) {
-                                    rssiBeacon3.setText(String.valueOf(reads2.get(reads2.size()-1)));
+                                    rssiBeacon3.setText("remolachaNotebookEscritorio = " + String.valueOf(reads2.get(reads2.size()-1)));
                                 }
                                 try{
                                     if(reads2.get(2)<top){
                                         if (beacon.getMinor()==28695)
-                                            beaconGanador = "amarillopared";
+                                            beaconGanador = "amarilloCompuEscritorio";
                                         if (beacon.getMinor()== 28617)
-                                            beaconGanador = "amarillopared";
-                                        else beaconGanador = "remolachamedio";
+                                            beaconGanador = "amarillopuerta";
+                                        if(beacon.getMinor() == 1731)
+                                            beaconGanador = "remolachaNotebookEscritorio";
                                         toptv.setText("ganador : " + beaconGanador);
                                         top = reads2.get(2) ;
                                     }
