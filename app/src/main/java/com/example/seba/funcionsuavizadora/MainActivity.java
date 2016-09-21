@@ -51,16 +51,16 @@ public class MainActivity extends AppCompatActivity {
                                 Beacon beacon = list.get(i);
                                 List<Integer> reads2 = readsBc.get(beacon.getMinor());
                                 if (reads2.size()==3){
-                                    int avg = (reads2.get(0) + reads2.get(1) + reads2.get(2))/3;
+//                                    int avg = (reads2.get(0) + reads2.get(1) + reads2.get(2))/3;
                                     int rssi = beacon.getRssi()*(-1);
-                                    if (rssi<(avg + 5)&& rssi>(avg - 5)){
+//                                    if (rssi<(avg + 5)&& rssi>(avg - 5)){
                                         reads2.set (0,reads2.get(1));
                                         reads2.set (1,reads2.get(2));
                                         reads2.set (2,beacon.getRssi()*(-1));
-                                    }
-                                    else {
-                                        //no hago nada descarto la ultima lectura
-                                    }
+//                                    }
+//                                    else {
+//                                        //no hago nada descarto la ultima lectura
+//                                    }
 
                                 }
                                 else{
@@ -69,13 +69,13 @@ public class MainActivity extends AppCompatActivity {
                                 readsBc.remove(beacon.getMinor());
                                 readsBc.put(beacon.getMinor(),reads2);
                                 if (beacon.getMinor() == 28695) {
-                                    rssiBeacon1.setText("amarilloCompuEscritorio = " + String.valueOf(reads2.get(reads2.size()-1)));
+//                                    rssiBeacon1.setText("amarilloCompuEscritorio = " + String.valueOf(reads2.get(reads2.size()-1)));
                                 }
                                 if (beacon.getMinor()==28617) {
-                                    rssiBeacon2.setText("amarillopuerta = " + String.valueOf(reads2.get(reads2.size()-1)));
+//                                    rssiBeacon2.setText("amarillopuerta = " + String.valueOf(reads2.get(reads2.size()-1)));
                                 }
                                 if (beacon.getMinor()==1731) {
-                                    rssiBeacon3.setText("remolachaNotebookEscritorio = " + String.valueOf(reads2.get(reads2.size()-1)));
+//                                    rssiBeacon3.setText("remolachaNotebookEscritorio = " + String.valueOf(reads2.get(reads2.size()-1)));
                                 }
                                 try{
                                     if(reads2.get(2)<top){
@@ -108,9 +108,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        rssiBeacon1 = (TextView)findViewById(R.id.rssiBeacon1);
-        rssiBeacon2 = (TextView)findViewById(R.id.rssiBeacon2);
-        rssiBeacon3 = (TextView)findViewById(R.id.rssiBeacon3);
+//        rssiBeacon1 = (TextView)findViewById(R.id.rssiBeacon1);
+//        rssiBeacon2 = (TextView)findViewById(R.id.rssiBeacon2);
+//        rssiBeacon3 = (TextView)findViewById(R.id.rssiBeacon3);
         toptv = (TextView)findViewById(R.id.toptv);
     }
 
