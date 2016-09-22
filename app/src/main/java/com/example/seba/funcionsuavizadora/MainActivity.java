@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
                                     int rssi = beacon.getRssi()*(-1);
 //                                    if (rssi<(avg + 5)&& rssi>(avg - 5)){
                                         reads2.set (0,reads2.get(1));
-                                        reads2.set (1,reads2.get(2));
+                                        reads2.set (1,reads2.get(2)                                        );
                                         reads2.set (2,beacon.getRssi()*(-1));
 //                                    }
 //                                    else {
