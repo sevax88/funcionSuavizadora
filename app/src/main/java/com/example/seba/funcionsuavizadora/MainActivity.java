@@ -12,7 +12,10 @@ import com.estimote.sdk.SystemRequirementsChecker;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -56,36 +59,23 @@ public class MainActivity extends AppCompatActivity {
 
                                     switch (beacon.getMinor()) {
                                         case 28695:
-                                            rssiBeacon1.setText("rssi lemon1 = " + actualRssi);
+                                            rssiBeacon1.setText("rssi lemon1 - 28695 = " + actualRssi);
                                             break;
                                         case 28617:
-                                            rssiBeacon2.setText("rssi lemon2 = " + actualRssi);
+                                            rssiBeacon2.setText("rssi lemon2 - 28617 = " + actualRssi);
                                             break;
                                         case 1731:
-                                            rssiBeacon3.setText("rssi remolacha = " + actualRssi);
+                                            rssiBeacon3.setText("rssi remolacha - 1731 = " + actualRssi);
                                             break;
                                         default:
                                             break;
                                     }
 
-                                    if (actualRssi > top) {
-                                        top = actualRssi;
-                                        switch (beacon.getMinor()) {
-                                            case 28695:
-                                                toptv.setText("THE GRAMY GOES FOR lemon1");
-                                                break;
-                                            case 28617:
-                                                toptv.setText("THE GRAMY GOES FOR lemon2");
-                                                break;
-                                            case 1731:
-                                                toptv.setText("THE GRAMY GOES FOR remolacha");
-                                                break;
-                                            default:
-                                                break;
-                                        }
-                                    }
+
                                 }
                             }
+                            //llamar a la funcion que ordena el map by values
+                            toptv.setText("AND THE AMI GOES TO... " + sortHashMapByValues((HashMap<Integer, Integer>) readsBc));
 
                         }
                     });
@@ -98,9 +88,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void fillMap() {
         readsBc = new HashMap<>();
-        readsBc.put(28695,0);     //minor del lemon1
+        readsBc.put(28695, 0);     //minor del lemon1
         readsBc.put(28617,0);     //minor del lemon2
-        readsBc.put(1731,0);     //minor del remolacha1
+        readsBc.put(1731, 0);     //minor del remolacha1
     }
 
     private void initViews() {
@@ -108,6 +98,34 @@ public class MainActivity extends AppCompatActivity {
         rssiBeacon2 = (TextView)findViewById(R.id.rssiBeacon2);
         rssiBeacon3 = (TextView)findViewById(R.id.rssiBeacon3);
         toptv = (TextView)findViewById(R.id.toptv);
+    }
+
+    public int sortHashMapByValues(HashMap<Integer, Integer> passedMap) {
+        List<Integer> mapKeys = new ArrayList<>(passedMap.keySet());
+        List<Integer> mapValues = new ArrayList<>(passedMap.values());
+        Collections.sort(mapValues);
+        Collections.sort(mapKeys);
+
+        LinkedHashMap<Integer, Integer> sortedMap = new LinkedHashMap<>();
+
+        Iterator<Integer> valueIt = mapValues.iterator();
+        while (valueIt.hasNext()) {
+            int val = valueIt.next();
+            Iterator<Integer> keyIt = mapKeys.iterator();
+
+            while (keyIt.hasNext()) {
+                Integer key = keyIt.next();
+                Integer comp1 = passedMap.get(key);
+                Integer comp2 = val;
+
+                if (comp1==comp2) {
+                    keyIt.remove();
+                    sortedMap.put(key, val);
+                    break;
+                }
+            }
+        }
+        return (int) sortedMap.keySet().toArray()[0];
     }
 
     @Override
