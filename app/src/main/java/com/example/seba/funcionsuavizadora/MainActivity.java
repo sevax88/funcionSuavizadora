@@ -23,8 +23,8 @@ public class MainActivity extends AppCompatActivity {
     private BeaconManager beaconManager;
     private Region region;
     private int listenerCount = 0;
-    private Map<Integer,List<Integer>> readsBc;
-    private String beaconGanador;
+    private Map<Integer,Integer> readsBc;
+    private double alpha = 0.5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,55 +42,31 @@ public class MainActivity extends AppCompatActivity {
                 Log.v("onBeaconDiscover","se descubrio un beacon - tiempo: " + System.currentTimeMillis());
                 if (!list.isEmpty()) {
                     Log.v("entrada al listener", String.valueOf(listenerCount));
-                    listenerCount++;
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            int top = 110;
-                            for (int i=0;i<list.size();i++){
+                            int top = 0;
+                            for (int i = 0; i < list.size(); i++) {
                                 Beacon beacon = list.get(i);
-                                List<Integer> reads2 = readsBc.get(beacon.getMinor());
-                                if (reads2.size()==3){
-                                    int avg = (reads2.get(0) + reads2.get(1) + reads2.get(2))/3;
-                                    int rssi = beacon.getRssi()*(-1);
-                                    if (rssi<(avg + 5)&& rssi>(avg - 5)){
-                                        reads2.set (0,reads2.get(1));
-                                        reads2.set (1,reads2.get(2));
-                                        reads2.set (2,beacon.getRssi()*(-1));
+                                if(readsBc.containsKey(beacon.getMinor())) {
+                                    int lastRssi = readsBc.get(beacon.getMinor());
+                                    int actualRssi = beacon.getRssi() * (-1);
+                                    actualRssi = (int) (alpha * actualRssi + (1 - alpha) * lastRssi);
+                                    readsBc.put(beacon.getMinor(), actualRssi);
+                                    if (actualRssi > top) {
+                                        top = actualRssi;
+                                        switch (beacon.getMinor()) {
+                                            case 28695:
+                                                toptv.setText("THE GRAMY GOES FOR amarilloCompuEscritorio");
+                                            case 28617:
+                                                toptv.setText("THE GRAMY GOES FOR amarilloPuerta");
+                                            case 1731:
+                                                toptv.setText("THE GRAMY GOES FOR remolacha");
+                                        }
                                     }
-                                    else {
-                                        //no hago nada descarto la ultima lectura
-                                    }
-
-                                }
-                                else{
-                                    reads2.add(beacon.getRssi() * (-1));
-                                }
-                                readsBc.remove(beacon.getMinor());
-                                readsBc.put(beacon.getMinor(),reads2);
-                                if (beacon.getMinor() == 28695) {
-                                    rssiBeacon1.setText("amarilloCompuEscritorio = " + String.valueOf(reads2.get(reads2.size()-1)));
-                                }
-                                if (beacon.getMinor()==28617) {
-                                    rssiBeacon2.setText("amarillopuerta = " + String.valueOf(reads2.get(reads2.size()-1)));
-                                }
-                                if (beacon.getMinor()==1731) {
-                                    rssiBeacon3.setText("remolachaNotebookEscritorio = " + String.valueOf(reads2.get(reads2.size()-1)));
-                                }
-                                try{
-                                    if(reads2.get(2)<top){
-                                        if (beacon.getMinor()==28695)
-                                            beaconGanador = "amarilloCompuEscritorio";
-                                        if (beacon.getMinor()== 28617)
-                                            beaconGanador = "amarillopuerta";
-                                        if(beacon.getMinor() == 1731)
-                                            beaconGanador = "remolachaNotebookEscritorio";
-                                        toptv.setText("ganador : " + beaconGanador);
-                                        top = reads2.get(2) ;
-                                    }
-                                }catch (Exception e){
                                 }
                             }
+
                         }
                     });
                     // TODO: update the UI here
@@ -102,15 +78,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void fillMap() {
         readsBc = new HashMap<>();
-        readsBc.put(28695,new ArrayList<Integer>());     //minor del lemon1
-        readsBc.put(28617,new ArrayList<Integer>());     //minor del lemon2
-        readsBc.put(1731,new ArrayList<Integer>());     //minor del remolacha1
+        readsBc.put(28695,0);     //minor del lemon1
+        readsBc.put(28617,0);     //minor del lemon2
+        readsBc.put(1731,0);     //minor del remolacha1
     }
 
     private void initViews() {
-        rssiBeacon1 = (TextView)findViewById(R.id.rssiBeacon1);
-        rssiBeacon2 = (TextView)findViewById(R.id.rssiBeacon2);
-        rssiBeacon3 = (TextView)findViewById(R.id.rssiBeacon3);
+//        rssiBeacon1 = (TextView)findViewById(R.id.rssiBeacon1);
+//        rssiBeacon2 = (TextView)findViewById(R.id.rssiBeacon2);
+//        rssiBeacon3 = (TextView)findViewById(R.id.rssiBeacon3);
         toptv = (TextView)findViewById(R.id.toptv);
     }
 
