@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private Region region;
     private int listenerCount = 0;
     private Map<Integer,Integer> readsBc;
-    private double alpha = 0.2;
+    private double alpha = 0.1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
