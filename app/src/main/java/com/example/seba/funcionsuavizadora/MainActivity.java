@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private BeaconManager beaconManager;
     private Region region;
     private int listenerCount = 0;
-    private Map<Integer,Integer> readsBc;
+    private Map<Integer,Integer> readsBc,beaconsSoporte;
     private double alpha = 0.1;
 
     @Override
@@ -71,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
                                             break;
                                     }
 
-
                                 }
                             }
                             //llamar a la funcion que ordena el map by values
@@ -88,9 +87,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void fillMap() {
         readsBc = new HashMap<>();
-        readsBc.put(28695, 0);     //minor del lemon1
-        readsBc.put(28617,0);     //minor del lemon2
-        readsBc.put(1731, 0);     //minor del remolacha1
+        beaconsSoporte = new HashMap<>();
+        readsBc.put(28695, 0);          //minor del lemon1
+        readsBc.put(28617,0);           //minor del lemon2
+        readsBc.put(1731, 0);           //minor del remolacha1
+        beaconsSoporte.put (52909,0);   //minor candy1
+        beaconsSoporte.put (27802,0);   //minorcandy2
+        beaconsSoporte.put (25989,0);   //minor remolacha2
+
     }
 
     private void initViews() {
