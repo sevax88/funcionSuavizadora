@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private Region region;
     private int listenerCount = 0;
     private Map<Integer,Integer> readsBc;
-    private double alpha = 0.5;
+    private double alpha = 0.2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +33,8 @@ public class MainActivity extends AppCompatActivity {
         initViews();
         fillMap();
         beaconManager = new BeaconManager(this);
-        beaconManager.setBackgroundScanPeriod(200, 0);
-        beaconManager.setForegroundScanPeriod(200,0);
+        beaconManager.setBackgroundScanPeriod(250,100);
+        beaconManager.setForegroundScanPeriod(250,100);
         region = new Region("ranged region", UUID.fromString("E7CD3AEB-363F-9EF0-4E53-DFB7DC5DDD46"), null, null);
         beaconManager.setRangingListener(new BeaconManager.RangingListener() {
             @Override
@@ -48,20 +48,40 @@ public class MainActivity extends AppCompatActivity {
                             int top = 0;
                             for (int i = 0; i < list.size(); i++) {
                                 Beacon beacon = list.get(i);
-                                if(readsBc.containsKey(beacon.getMinor())) {
+                                if (readsBc.containsKey(beacon.getMinor())) {
                                     int lastRssi = readsBc.get(beacon.getMinor());
                                     int actualRssi = beacon.getRssi() * (-1);
                                     actualRssi = (int) (alpha * actualRssi + (1 - alpha) * lastRssi);
                                     readsBc.put(beacon.getMinor(), actualRssi);
+
+                                    switch (beacon.getMinor()) {
+                                        case 28695:
+                                            rssiBeacon1.setText("rssi lemon1 = " + actualRssi);
+                                            break;
+                                        case 28617:
+                                            rssiBeacon2.setText("rssi lemon2 = " + actualRssi);
+                                            break;
+                                        case 1731:
+                                            rssiBeacon3.setText("rssi remolacha = " + actualRssi);
+                                            break;
+                                        default:
+                                            break;
+                                    }
+
                                     if (actualRssi > top) {
                                         top = actualRssi;
                                         switch (beacon.getMinor()) {
                                             case 28695:
-                                                toptv.setText("THE GRAMY GOES FOR amarilloCompuEscritorio");
+                                                toptv.setText("THE GRAMY GOES FOR lemon1");
+                                                break;
                                             case 28617:
-                                                toptv.setText("THE GRAMY GOES FOR amarilloPuerta");
+                                                toptv.setText("THE GRAMY GOES FOR lemon2");
+                                                break;
                                             case 1731:
                                                 toptv.setText("THE GRAMY GOES FOR remolacha");
+                                                break;
+                                            default:
+                                                break;
                                         }
                                     }
                                 }
@@ -84,9 +104,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-//        rssiBeacon1 = (TextView)findViewById(R.id.rssiBeacon1);
-//        rssiBeacon2 = (TextView)findViewById(R.id.rssiBeacon2);
-//        rssiBeacon3 = (TextView)findViewById(R.id.rssiBeacon3);
+        rssiBeacon1 = (TextView)findViewById(R.id.rssiBeacon1);
+        rssiBeacon2 = (TextView)findViewById(R.id.rssiBeacon2);
+        rssiBeacon3 = (TextView)findViewById(R.id.rssiBeacon3);
         toptv = (TextView)findViewById(R.id.toptv);
     }
 
