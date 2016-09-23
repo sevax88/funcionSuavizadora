@@ -72,6 +72,25 @@ public class MainActivity extends AppCompatActivity {
                                     }
 
                                 }
+                                if (beaconsSoporte.containsKey(beacon.getMinor())) {
+                                    int lastRssi = readsBc.get(beacon.getMinor());
+                                    int actualRssi = beacon.getRssi() * (-1);
+                                    actualRssi = (int) (alpha * actualRssi + (1 - alpha) * lastRssi);
+                                    readsBc.put(beacon.getMinor(), actualRssi);
+                                    switch (beacon.getMinor()) {
+                                        case 52909:
+                                            rssiBeacon3.setText("rssi candy1 - 52909 = " + actualRssi);
+                                            break;
+                                        case 27802:
+                                            rssiBeacon3.setText("rssi candy2 - 27802 = " + actualRssi);
+                                            break;
+                                        case 25989:
+                                            rssiBeacon3.setText("rssi remolacha2 - 25989 = " + actualRssi);
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }
                             }
                             //llamar a la funcion que ordena el map by values
                             toptv.setText("AND THE AMI GOES TO... " + sortHashMapByValues((HashMap<Integer, Integer>) readsBc));
@@ -92,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         readsBc.put(28617,0);           //minor del lemon2
         readsBc.put(1731, 0);           //minor del remolacha1
         beaconsSoporte.put (52909,0);   //minor candy1
-        beaconsSoporte.put (27802,0);   //minorcandy2
+        beaconsSoporte.put (27802,0);   //minor candy2
         beaconsSoporte.put (25989,0);   //minor remolacha2
 
     }
