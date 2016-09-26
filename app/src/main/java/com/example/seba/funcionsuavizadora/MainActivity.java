@@ -88,19 +88,19 @@ public class MainActivity extends AppCompatActivity {
                                             soporteAmarillo.setText("rssi soporte lemon = " + actualRssi);
                                             rssiCarry = readsBc.get(28695);
                                             equipoAmarillo = rssiCarry + actualRssi;
-                                            equipoAmarillotv.setText(String.valueOf(equipoAmarillo));
+                                            equipoAmarillotv.setText("equipo amarillo = " + String.valueOf(equipoAmarillo));
                                             break;
                                         case 27802:
                                             soporteCandy.setText("rssi  soporte candy = " + actualRssi);
                                             rssiCarry = readsBc.get(52909);
                                             equipoCandy = rssiCarry + actualRssi;
-                                            equipoCandytv.setText(String.valueOf(equipoCandy));
+                                            equipoCandytv.setText("equipo candy = " + String.valueOf(equipoCandy));
                                             break;
                                         case 25989:
                                             soporteRemolacha.setText("rssi soporte remolacha = " + actualRssi);
                                             rssiCarry = readsBc.get(1731);
                                             equipoRemolacha = rssiCarry + actualRssi;
-                                            equipoRemolachatv.setText(String.valueOf(equipoRemolacha));
+                                            equipoRemolachatv.setText("equipo remolacha = " + String.valueOf(equipoRemolacha));
                                             break;
                                         default:
                                             break;
