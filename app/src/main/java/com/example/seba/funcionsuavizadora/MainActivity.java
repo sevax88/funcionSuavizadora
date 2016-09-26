@@ -28,6 +28,12 @@ public class MainActivity extends AppCompatActivity {
     private int listenerCount = 0;
     private Map<Integer,Integer> readsBc,beaconsSoporte;
     private double alpha = 0.1;
+    private TextView soporteAmarillo,soporteCandy,soporteRemolacha,equipoAmarillotv,equipoCandytv,equipoRemolachatv;
+    private Integer rssiCarry;
+    private int equipoAmarillo;
+    private int equipoCandy;
+    private int equipoRemolacha;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,11 +67,11 @@ public class MainActivity extends AppCompatActivity {
                                         case 28695:
                                             rssiBeacon1.setText("rssi lemon1 - 28695 = " + actualRssi);
                                             break;
-                                        case 28617:
-                                            rssiBeacon2.setText("rssi lemon2 - 28617 = " + actualRssi);
+                                        case 52909:
+                                            rssiBeacon2.setText("rssi candi1 - 52909 = " + actualRssi);
                                             break;
                                         case 1731:
-                                            rssiBeacon3.setText("rssi remolacha - 1731 = " + actualRssi);
+                                            rssiBeacon3.setText("rssi remolacha1 - 1731 = " + actualRssi);
                                             break;
                                         default:
                                             break;
@@ -73,28 +79,50 @@ public class MainActivity extends AppCompatActivity {
 
                                 }
                                 if (beaconsSoporte.containsKey(beacon.getMinor())) {
-                                    int lastRssi = readsBc.get(beacon.getMinor());
+                                    int lastRssi = beaconsSoporte.get(beacon.getMinor());
                                     int actualRssi = beacon.getRssi() * (-1);
                                     actualRssi = (int) (alpha * actualRssi + (1 - alpha) * lastRssi);
-                                    readsBc.put(beacon.getMinor(), actualRssi);
+                                    beaconsSoporte.put(beacon.getMinor(), actualRssi);
                                     switch (beacon.getMinor()) {
-                                        case 52909:
-                                            rssiBeacon3.setText("rssi candy1 - 52909 = " + actualRssi);
+                                        case 28617:
+                                            soporteAmarillo.setText("rssi soporte lemon = " + actualRssi);
+                                            rssiCarry = readsBc.get(28695);
+                                            equipoAmarillo = rssiCarry + actualRssi;
+                                            equipoAmarillotv.setText(String.valueOf(equipoAmarillo));
                                             break;
                                         case 27802:
-                                            rssiBeacon3.setText("rssi candy2 - 27802 = " + actualRssi);
+                                            soporteCandy.setText("rssi  soporte candy = " + actualRssi);
+                                            rssiCarry = readsBc.get(52909);
+                                            equipoCandy = rssiCarry + actualRssi;
+                                            equipoCandytv.setText(String.valueOf(equipoCandy));
                                             break;
                                         case 25989:
-                                            rssiBeacon3.setText("rssi remolacha2 - 25989 = " + actualRssi);
+                                            soporteRemolacha.setText("rssi soporte remolacha = " + actualRssi);
+                                            rssiCarry = readsBc.get(1731);
+                                            equipoRemolacha = rssiCarry + actualRssi;
+                                            equipoRemolachatv.setText(String.valueOf(equipoRemolacha));
                                             break;
                                         default:
                                             break;
                                     }
                                 }
                             }
+                            if (equipoAmarillo < equipoCandy) {
+                                if (equipoAmarillo < equipoRemolacha) {
+                                    toptv.setText("AND THE AMI GOES TO EQUIPO AMARILLO");
+                                } else {
+                                    toptv.setText("AND THE AMI GOES TO EQUIPO REMOLACHA");
+                                }
+                            } else if (equipoCandy < equipoRemolacha) {
+                                toptv.setText("AND THE AMI GOES TO EQUIPO CANDY");
+                            } else {
+                                toptv.setText("AND THE AMI GOES TO EQUIPO REMOLACHA");
+                            }
+                            equipoAmarillo = 0;
+                            equipoRemolacha = 0;
+                            equipoCandy = 0;
                             //llamar a la funcion que ordena el map by values
-                            toptv.setText("AND THE AMI GOES TO... " + sortHashMapByValues((HashMap<Integer, Integer>) readsBc));
-
+//                            toptv.setText("AND THE AMI GOES TO... " + sortHashMapByValues((HashMap<Integer, Integer>) readsBc));
                         }
                     });
                     // TODO: update the UI here
@@ -107,10 +135,12 @@ public class MainActivity extends AppCompatActivity {
     private void fillMap() {
         readsBc = new HashMap<>();
         beaconsSoporte = new HashMap<>();
+
         readsBc.put(28695, 0);          //minor del lemon1
-        readsBc.put(28617,0);           //minor del lemon2
         readsBc.put(1731, 0);           //minor del remolacha1
-        beaconsSoporte.put (52909,0);   //minor candy1
+        readsBc.put (52909,0);   //minor candy1
+
+        beaconsSoporte.put(28617,0);           //minor del lemon2
         beaconsSoporte.put (27802,0);   //minor candy2
         beaconsSoporte.put (25989,0);   //minor remolacha2
 
@@ -120,6 +150,14 @@ public class MainActivity extends AppCompatActivity {
         rssiBeacon1 = (TextView)findViewById(R.id.rssiBeacon1);
         rssiBeacon2 = (TextView)findViewById(R.id.rssiBeacon2);
         rssiBeacon3 = (TextView)findViewById(R.id.rssiBeacon3);
+        soporteAmarillo = (TextView)findViewById(R.id.soporteAmarillo);
+        soporteCandy = (TextView)findViewById(R.id.soporteCandy);
+        soporteRemolacha = (TextView)findViewById(R.id.soporteRemolacha);
+
+        equipoAmarillotv = (TextView) findViewById(R.id.equipoAmarillo);
+        equipoCandytv = (TextView)findViewById(R.id.equipoCandy);
+        equipoRemolachatv = (TextView)findViewById(R.id.equipoRemolacha);
+
         toptv = (TextView)findViewById(R.id.toptv);
     }
 

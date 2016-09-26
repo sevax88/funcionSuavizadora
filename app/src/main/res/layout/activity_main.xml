@@ -25,14 +25,55 @@
         />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/rssiBeacon3"
-        android:text="rssi3 = "
-        android:layout_marginBottom="15dp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/rssiBeacon3"
+    android:text="rssi3 = "
+    android:layout_marginBottom="15dp"
     />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/soporteAmarillo"
+        android:text="soporteAmarillo = "
+        />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/soporteCandy"
+        android:text="soporteCandy= "
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/soporteRemolacha"
+        android:text="soporteRemolacha = "
+        android:layout_marginBottom="15dp"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/equipoAmarillo"
+        android:text="equipoAmarillo= "
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/equipoCandy"
+        android:text="equipoCandy= "
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/equipoRemolacha"
+        android:text="equipoRemolacha = "
+        android:layout_marginBottom="15dp"
+        />
 
     <TextView
         android:layout_width="wrap_content"
