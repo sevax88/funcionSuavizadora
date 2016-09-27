@@ -109,14 +109,30 @@ public class MainActivity extends AppCompatActivity {
                             }
                             if (equipoAmarillo < equipoCandy) {
                                 if (equipoAmarillo < equipoRemolacha) {
-                                    toptv.setText("AND THE AMI GOES TO EQUIPO AMARILLO");
+                                    if (equipoAmarillo < 130) {
+                                        toptv.setText("AND THE AMI GOES TO EQUIPO AMARILLO");
+                                    } else {
+                                        toptv.setText("ESTAS EN EL MEDIO");
+                                    }
                                 } else {
-                                    toptv.setText("AND THE AMI GOES TO EQUIPO REMOLACHA");
+                                    if (equipoRemolacha < 130) {
+                                        toptv.setText("AND THE AMI GOES TO EQUIPO REMOLACHA");
+                                    } else {
+                                        toptv.setText("ESTAS EN EL MEDIO");
+                                    }
                                 }
                             } else if (equipoCandy < equipoRemolacha) {
-                                toptv.setText("AND THE AMI GOES TO EQUIPO CANDY");
+                                if (equipoCandy < 130) {
+                                    toptv.setText("AND THE AMI GOES TO EQUIPO CANDY");
+                                } else {
+                                    toptv.setText("ESTAS EN EL MEDIO");
+                                }
                             } else {
-                                toptv.setText("AND THE AMI GOES TO EQUIPO REMOLACHA");
+                                if (equipoRemolacha < 130) {
+                                    toptv.setText("AND THE AMI GOES TO EQUIPO REMOLACHA");
+                                } else {
+                                    toptv.setText("ESTAS EN EL MEDIO");
+                                }
                             }
                             equipoAmarillo = 0;
                             equipoRemolacha = 0;
