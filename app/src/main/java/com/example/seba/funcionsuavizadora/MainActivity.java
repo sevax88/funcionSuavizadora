@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         fillMap();
         beaconManager = new BeaconManager(this);
 //        beaconManager.setBackgroundScanPeriod(250,0);
-        beaconManager.setForegroundScanPeriod(150,0);
+        beaconManager.setForegroundScanPeriod(950,0);
         region = new Region("ranged region", UUID.fromString("E7CD3AEB-363F-9EF0-4E53-DFB7DC5DDD46"), null, null);
         beaconManager.setRangingListener(new BeaconManager.RangingListener() {
             @Override
@@ -88,18 +88,36 @@ public class MainActivity extends AppCompatActivity {
                                             soporteAmarillo.setText("rssi soporte lemon = " + actualRssi);
                                             rssiCarry = readsBc.get(28695);
                                             equipoAmarillo = rssiCarry + actualRssi;
+                                            if (Math.abs(rssiCarry - actualRssi) > 10) {
+                                                equipoAmarillo = equipoAmarillo - 10;
+                                            }
+                                            if (Math.abs(rssiCarry - actualRssi) < 10) {
+                                                equipoAmarillo = equipoAmarillo - 5;
+                                            }
                                             equipoAmarillotv.setText("equipo amarillo = " + String.valueOf(equipoAmarillo));
                                             break;
                                         case 27802:
                                             soporteCandy.setText("rssi  soporte candy = " + actualRssi);
                                             rssiCarry = readsBc.get(52909);
                                             equipoCandy = rssiCarry + actualRssi;
+                                            if (Math.abs(rssiCarry - actualRssi) > 10) {
+                                                equipoCandy = equipoCandy - 10;
+                                            }
+                                            if (Math.abs(rssiCarry - actualRssi) <10) {
+                                                equipoCandy = equipoCandy - 5;
+                                            }
                                             equipoCandytv.setText("equipo candy = " + String.valueOf(equipoCandy));
                                             break;
                                         case 25989:
                                             soporteRemolacha.setText("rssi soporte remolacha = " + actualRssi);
                                             rssiCarry = readsBc.get(1731);
                                             equipoRemolacha = rssiCarry + actualRssi;
+                                            if (Math.abs(rssiCarry - actualRssi)>10){
+                                                equipoRemolacha = equipoRemolacha - 10;
+                                            }
+                                            if (Math.abs(rssiCarry - actualRssi)<10){
+                                                equipoRemolacha = equipoRemolacha - 5;
+                                            }
                                             equipoRemolachatv.setText("equipo remolacha = " + String.valueOf(equipoRemolacha));
                                             break;
                                         default:
@@ -109,30 +127,30 @@ public class MainActivity extends AppCompatActivity {
                             }
                             if (equipoAmarillo < equipoCandy) {
                                 if (equipoAmarillo < equipoRemolacha) {
-                                    if (equipoAmarillo < 130) {
+//                                    if (equipoAmarillo < 132) {
                                         toptv.setText("AND THE AMI GOES TO EQUIPO AMARILLO");
-                                    } else {
-                                        toptv.setText("ESTAS EN EL MEDIO");
-                                    }
+//                                    } else {
+//                                        toptv.setText("ESTAS EN EL MEDIO");
+//                                    }
                                 } else {
-                                    if (equipoRemolacha < 130) {
+//                                    if (equipoRemolacha < 132) {
                                         toptv.setText("AND THE AMI GOES TO EQUIPO REMOLACHA");
-                                    } else {
-                                        toptv.setText("ESTAS EN EL MEDIO");
-                                    }
+//                                    } else {
+//                                        toptv.setText("ESTAS EN EL MEDIO");
+//                                    }
                                 }
                             } else if (equipoCandy < equipoRemolacha) {
-                                if (equipoCandy < 130) {
+//                                if (equipoCandy < 132) {
                                     toptv.setText("AND THE AMI GOES TO EQUIPO CANDY");
-                                } else {
-                                    toptv.setText("ESTAS EN EL MEDIO");
-                                }
+//                                } else {
+//                                    toptv.setText("ESTAS EN EL MEDIO");
+//                                }
                             } else {
-                                if (equipoRemolacha < 130) {
+//                                if (equipoRemolacha < 132) {
                                     toptv.setText("AND THE AMI GOES TO EQUIPO REMOLACHA");
-                                } else {
-                                    toptv.setText("ESTAS EN EL MEDIO");
-                                }
+//                                } else {
+//                                    toptv.setText("ESTAS EN EL MEDIO");
+//                                }
                             }
                             equipoAmarillo = 0;
                             equipoRemolacha = 0;
