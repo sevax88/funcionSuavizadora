@@ -24,18 +24,17 @@ import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView rssiBeacon1,rssiBeacon2,rssiBeacon3,rssiBeacon4,candidato,toptv;
+    private TextView rssiBeacon1,rssiBeacon2,rssiBeacon3,rssiBeacon4,rssiBeacon5,toptv;
     private BeaconManager beaconManager;
     private Region region;
     private int listenerCount = 0;
     private Map<Integer,Integer> readsBc,beaconsSoporte;
     private double alpha = 0.1;
-    private TextView soporteAmarillo,soporteCandy,soporteRemolacha,equipoAmarillotv,equipoCandytv,equipoRemolachatv,equipoVerdetv,soporteVerde;
+    private TextView soporteAmarillo,soporteCandy,soporteRemolacha,equipoAmarillotv,equipoCandytv,equipoRemolachatv,equipoVerdetv,soporteVerde,soporteAzul,equipoAzultv;
     private Integer rssiCarry;
-    private int equipoAmarillo;
-    private int equipoCandy;
-    private int equipoRemolacha,equipoVerde;
-    public int j=2;
+    private int equipoAmarillo,equipoCandy,equipoRemolacha,equipoVerde,equipoAzul;
+    public int j=5;
+    private String equipoGanador;
 
 
     @Override
@@ -76,6 +75,9 @@ public class MainActivity extends AppCompatActivity {
                                             break;
                                         case 4739:
                                             rssiBeacon4.setText("rssi verde1 - 4739 = " + actualRssi);
+                                            break;
+                                        case 17578:
+                                            rssiBeacon5.setText("rssi azul - 17578 = " + actualRssi);
                                             break;
                                         default:
                                             break;
@@ -128,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
                                             soporteVerde.setText("rssi soporte verde = " + actualRssi);
                                             rssiCarry = readsBc.get(4739);
                                             equipoVerde = rssiCarry + actualRssi;
-                                            if (Math.abs(rssiCarry - actualRssi)>10){
+                                            if (Math.abs(rssiCarry - actualRssi)>=10){
                                                 equipoVerde = equipoVerde - 10;
                                             }
                                             if (Math.abs(rssiCarry - actualRssi)<10){
@@ -136,21 +138,49 @@ public class MainActivity extends AppCompatActivity {
                                             }
                                             equipoVerdetv.setText("equipo verde = " + String.valueOf(equipoVerde));
                                             break;
+                                        case 20799:
+                                            soporteAzul.setText("rssi soporte azul = " + actualRssi);
+                                            rssiCarry = readsBc.get(17578);
+                                            equipoAzul = rssiCarry + actualRssi;
+                                            if (Math.abs(rssiCarry - actualRssi)>10){
+                                                equipoAzul = equipoAzul - 20;
+                                            }
+                                            if (Math.abs(rssiCarry - actualRssi)<10){
+                                                equipoAzul = equipoAzul - 8;
+                                            }
+                                            equipoAzultv.setText("equipo azul = " + String.valueOf(equipoAzul));
+                                            break;
                                         default:
                                             break;
                                     }
                                 }
                             }
-                            j=j-1;
+//                            j--;
                             Map<Integer,String> equiposMap = new TreeMap<Integer, String>();
-                            equiposMap.put(equipoRemolacha,"equipo Remolacha");
-                            equiposMap.put(equipoCandy, "equipo Candy");
+                            equiposMap.put(equipoRemolacha,"equipoRemolacha");
+                            equiposMap.put(equipoCandy, "equipoCandy");
                             equiposMap.put(equipoAmarillo, "equipoAmarillo");
-                            equiposMap.put(equipoVerde, "equipo Verde");
-                            String equipoGanador = equiposMap.values().toArray()[0].toString();
-                            if (j==0){
-                                toptv.setText("AND THE AMI GOES FOR " + equipoGanador);
-                                j=2;
+                            equiposMap.put(equipoVerde, "equipoVerde");
+                            equiposMap.put(equipoAzul," equipoAzul");
+                            //agregar filtros oblicuos de espalda
+                            try {
+//                                if ()) {
+//                                    equipoGanador = "equipoRemolacha";
+//                                    j--;
+//
+//                                }
+//                                 else {
+                                    equipoGanador = equiposMap.values().toArray()[0].toString();
+                                    j--;
+
+//                                }
+                                if (j==0) {
+                                    toptv.setText("AND THE AMI GOES FOR " + equipoGanador);
+                                    j=5;
+                                }
+
+                            }catch (Exception e){
+
                             }
                             resetearEquipos();
                             equiposMap.clear();
@@ -177,6 +207,7 @@ public class MainActivity extends AppCompatActivity {
         equipoRemolacha = 0;
         equipoCandy = 0;
         equipoVerde = 0;
+        equipoAzul=0;
     }
 
     private void fillMap() {
@@ -187,11 +218,13 @@ public class MainActivity extends AppCompatActivity {
         readsBc.put(1731, 0);           //minor del remolacha1
         readsBc.put (52909,0);          //minor candy1
         readsBc.put (4739,0);           //minor verde1
+        readsBc.put(17578,0);           //minor del azul
 
         beaconsSoporte.put(28617,0);    //minor del lemon2
         beaconsSoporte.put (27802,0);   //minor candy2
         beaconsSoporte.put (25989,0);   //minor remolacha2
         beaconsSoporte.put(13451,0);    //minor del verde2
+        beaconsSoporte.put(20799,0);    //minor del celeste
     }
 
     private void initViews() {
@@ -199,15 +232,19 @@ public class MainActivity extends AppCompatActivity {
         rssiBeacon2 = (TextView)findViewById(R.id.rssiBeacon2);
         rssiBeacon3 = (TextView)findViewById(R.id.rssiBeacon3);
         rssiBeacon4 = (TextView)findViewById(R.id.rssiBeacon4);
+        rssiBeacon5 = (TextView)findViewById(R.id.rssiBeacon5);
+
         soporteAmarillo = (TextView)findViewById(R.id.soporteAmarillo);
         soporteCandy = (TextView)findViewById(R.id.soporteCandy);
         soporteRemolacha = (TextView)findViewById(R.id.soporteRemolacha);
         soporteVerde = (TextView)findViewById(R.id.soporteVerde);
+        soporteAzul = (TextView)findViewById(R.id.soporteAzul);
 
         equipoAmarillotv = (TextView) findViewById(R.id.equipoAmarillo);
         equipoCandytv = (TextView)findViewById(R.id.equipoCandy);
         equipoRemolachatv = (TextView)findViewById(R.id.equipoRemolacha);
         equipoVerdetv = (TextView)findViewById(R.id.equipoVerde);
+        equipoAzultv = (TextView)findViewById(R.id.equipoAzul);
 
         toptv = (TextView)findViewById(R.id.toptv);
     }
