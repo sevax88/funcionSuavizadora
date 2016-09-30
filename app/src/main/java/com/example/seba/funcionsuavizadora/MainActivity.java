@@ -9,6 +9,7 @@ import com.estimote.sdk.Beacon;
 import com.estimote.sdk.BeaconManager;
 import com.estimote.sdk.Region;
 import com.estimote.sdk.SystemRequirementsChecker;
+import com.estimote.sdk.telemetry.EstimoteTelemetry;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private int equipoAmarillo;
     private int equipoCandy;
     private int equipoRemolacha,equipoVerde;
+    public int j=2;
 
 
     @Override
@@ -43,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
         initViews();
         fillMap();
         beaconManager = new BeaconManager(this);
-//        beaconManager.setBackgroundScanPeriod(250,0);
         beaconManager.setForegroundScanPeriod(950,0);
         region = new Region("ranged region", null, null, null);
         beaconManager.setRangingListener(new BeaconManager.RangingListener() {
@@ -55,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            int top = 0;
                             for (int i = 0; i < list.size(); i++) {
                                 Beacon beacon = list.get(i);
                                 if (readsBc.containsKey(beacon.getMinor())) {
@@ -141,14 +141,17 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 }
                             }
-                           //meterlos en una lista y ordenarlos , sacar el primero
+                            j=j-1;
                             Map<Integer,String> equiposMap = new TreeMap<Integer, String>();
                             equiposMap.put(equipoRemolacha,"equipo Remolacha");
                             equiposMap.put(equipoCandy, "equipo Candy");
                             equiposMap.put(equipoAmarillo, "equipoAmarillo");
                             equiposMap.put(equipoVerde, "equipo Verde");
                             String equipoGanador = equiposMap.values().toArray()[0].toString();
-                            toptv.setText("AND THE AMI GOES FOR " + equipoGanador);
+                            if (j==0){
+                                toptv.setText("AND THE AMI GOES FOR " + equipoGanador);
+                                j=2;
+                            }
                             resetearEquipos();
                             equiposMap.clear();
 
@@ -158,6 +161,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+//        beaconManager.setTelemetryListener(new BeaconManager.TelemetryListener() {
+//            @Override
+//            public void onTelemetriesFound(List<EstimoteTelemetry> list) {
+//                if (list.size()>0)
+//                    Log.v("telemetry","");
+//            }
+//        });
 
 
     }
@@ -202,34 +212,6 @@ public class MainActivity extends AppCompatActivity {
         toptv = (TextView)findViewById(R.id.toptv);
     }
 
-    public LinkedHashMap<Integer, String> sortHashMapByValues(HashMap<Integer, String> passedMap) {
-        List<Integer> mapKeys = new ArrayList<>(passedMap.keySet());
-        List<String> mapValues = new ArrayList<>(passedMap.values());
-        Collections.sort(mapKeys);
-//        Collections.sort(mapKeys);
-
-        LinkedHashMap<Integer, String> sortedMap =
-                new LinkedHashMap<>();
-
-        Iterator<String> valueIt = mapValues.iterator();
-        while (valueIt.hasNext()) {
-            String val = valueIt.next();
-            Iterator<Integer> keyIt = mapKeys.iterator();
-
-            while (keyIt.hasNext()) {
-                Integer key = keyIt.next();
-                String comp1 = passedMap.get(key);
-                String comp2 = val;
-
-                if (comp1.equals(comp2)) {
-                    keyIt.remove();
-                    sortedMap.put(key, val);
-                    break;
-                }
-            }
-        }
-        return sortedMap;
-    }
 
     @Override
     protected void onResume() {
@@ -240,6 +222,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onServiceReady() {
                 beaconManager.startRanging(region);
+//                beaconManager.startTelemetryDiscovery();
             }
         });
     }
@@ -247,6 +230,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         beaconManager.stopRanging(region);
+//        beaconManager.stopTelemetryDiscovery();
         super.onPause();
     }
 
