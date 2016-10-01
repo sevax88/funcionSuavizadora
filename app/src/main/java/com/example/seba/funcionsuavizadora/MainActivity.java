@@ -33,8 +33,12 @@ public class MainActivity extends AppCompatActivity {
     private TextView soporteAmarillo,soporteCandy,soporteRemolacha,equipoAmarillotv,equipoCandytv,equipoRemolachatv,equipoVerdetv,soporteVerde,soporteAzul,equipoAzultv;
     private Integer rssiCarry;
     private int equipoAmarillo,equipoCandy,equipoRemolacha,equipoVerde,equipoAzul;
-    public int j=5;
+    public int j=3;
     private String equipoGanador;
+    private TreeMap<Integer, String> equiposMap;
+    private String neightborArray[] = new String[5];
+    private int actualPos = 0;
+    private String candidato = "equipoVerde";
 
 
     @Override
@@ -156,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }
 //                            j--;
-                            Map<Integer,String> equiposMap = new TreeMap<Integer, String>();
+                            equiposMap = new TreeMap<Integer, String>();
                             equiposMap.put(equipoRemolacha,"equipoRemolacha");
                             equiposMap.put(equipoCandy, "equipoCandy");
                             equiposMap.put(equipoAmarillo, "equipoAmarillo");
@@ -164,19 +168,19 @@ public class MainActivity extends AppCompatActivity {
                             equiposMap.put(equipoAzul," equipoAzul");
                             //agregar filtros oblicuos de espalda
                             try {
-//                                if ()) {
-//                                    equipoGanador = "equipoRemolacha";
-//                                    j--;
-//
-//                                }
-//                                 else {
-                                    equipoGanador = equiposMap.values().toArray()[0].toString();
-                                    j--;
-
-//                                }
+                                candidato = equiposMap.values().toArray()[0].toString();
+                                if (candidato.equals(neightborArray[actualPos +1])){
+                                    equipoGanador = candidato;
+                                    actualPos++;
+                                }
+                                if (candidato.equals(neightborArray[actualPos -1])){
+                                    equipoGanador = candidato;
+                                    actualPos--;
+                                }
+                                j--;
                                 if (j==0) {
                                     toptv.setText("AND THE AMI GOES FOR " + equipoGanador);
-                                    j=5;
+                                    j=3;
                                 }
 
                             }catch (Exception e){
@@ -198,7 +202,6 @@ public class MainActivity extends AppCompatActivity {
 //                    Log.v("telemetry","");
 //            }
 //        });
-
 
     }
 
@@ -225,6 +228,12 @@ public class MainActivity extends AppCompatActivity {
         beaconsSoporte.put (25989,0);   //minor remolacha2
         beaconsSoporte.put(13451,0);    //minor del verde2
         beaconsSoporte.put(20799,0);    //minor del celeste
+
+        neightborArray[0] = "equipoVerde";
+        neightborArray[1] = "equipoRemolacha";
+        neightborArray[2] = "equipoAzul";
+        neightborArray[3] = "equipoCandy";
+        neightborArray[4] = "equipoAmarillo";
     }
 
     private void initViews() {
