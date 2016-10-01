@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         beaconManager.setRangingListener(new BeaconManager.RangingListener() {
             @Override
             public void onBeaconsDiscovered(Region region, final List<Beacon> list) {
-                Log.v("onBeaconDiscover","se descubrio un beacon - tiempo: " + System.currentTimeMillis());
+                Log.v("onBeaconDiscover","se descubrio un beacon - tiempo: " + System.currentTimeMillis() + "list size =" + list.size());
                 if (!list.isEmpty()) {
                     Log.v("entrada al listener", String.valueOf(listenerCount));
                     runOnUiThread(new Runnable() {
