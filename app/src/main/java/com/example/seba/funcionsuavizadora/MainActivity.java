@@ -1,5 +1,7 @@
 package com.example.seba.funcionsuavizadora;
 
+import android.content.Intent;
+import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,6 +25,7 @@ import java.util.TreeMap;
 import java.util.UUID;
 
 import Models.Poi;
+import Utils.Speaker;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
     private Poi neightborArray[] = new Poi[5];
     private int actualPos = 0;
     private String candidato = "";
+    private final int CHECK_CODE = 0x1;
+    private Speaker speaker;
 
 
     @Override
@@ -161,14 +166,12 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 }
                             }
-//                            j--;
                             equiposMap = new TreeMap<Integer, String>();
                             equiposMap.put(equipoRemolacha,"equipoRemolacha");
                             equiposMap.put(equipoCandy, "equipoCandy");
                             equiposMap.put(equipoAmarillo, "equipoAmarillo");
                             equiposMap.put(equipoVerde, "equipoVerde");
                             equiposMap.put(equipoAzul," equipoAzul");
-                            //agregar filtros oblicuos de espalda
                             try {
                                 candidato = equiposMap.values().toArray()[0].toString();
                                 if (candidato.equals(neightborArray[actualPos +1].getNombreEquipo())){
@@ -191,6 +194,8 @@ public class MainActivity extends AppCompatActivity {
                                 j--;
                                 if (j==0) {
                                     toptv.setText("AND THE AMI GOES TO " + equipoGanador);
+                                    speaker.allow(true);
+                                    speaker.speak(neightborArray[actualPos].getAudio());
                                     j=3;
                                 }
 
@@ -205,14 +210,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
-//        beaconManager.setTelemetryListener(new BeaconManager.TelemetryListener() {
-//            @Override
-//            public void onTelemetriesFound(List<EstimoteTelemetry> list) {
-//                if (list.size()>0)
-//                    Log.v("telemetry","");
-//            }
-//        });
 
     }
 
@@ -240,11 +237,6 @@ public class MainActivity extends AppCompatActivity {
         beaconsSoporte.put(13451,0);    //minor del verde2
         beaconsSoporte.put(20799,0);    //minor del celeste
 
-//        neightborArray[0] = "equipoVerde";
-//        neightborArray[1] = "equipoRemolacha";
-//        neightborArray[2] = "equipoAzul";
-//        neightborArray[3] = "equipoCandy";
-//        neightborArray[4] = "equipoAmarillo";
 
         neightborArray[0] = new Poi("equipoVerde","Entrada");
         neightborArray[1] = new Poi("equipoRemolacha","Escaleras");
@@ -285,7 +277,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onServiceReady() {
                 beaconManager.startRanging(region);
-//                beaconManager.startTelemetryDiscovery();
             }
         });
     }
@@ -293,12 +284,30 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         beaconManager.stopRanging(region);
-//        beaconManager.stopTelemetryDiscovery();
         super.onPause();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+    }
+
+    private void checkTTS(){
+        Intent check = new Intent();
+        check.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+        startActivityForResult(check, CHECK_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CHECK_CODE) {
+            if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
+                speaker = new Speaker(this);
+            } else {
+                Intent install = new Intent();
+                install.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+                startActivity(install);
+            }
+        }
     }
 }
