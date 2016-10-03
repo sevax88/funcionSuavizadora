@@ -1,6 +1,11 @@
 package com.example.seba.funcionsuavizadora;
 
+import android.content.Context;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,7 +32,7 @@ import java.util.UUID;
 import Models.Poi;
 import Utils.Speaker;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     private TextView rssiBeacon1,rssiBeacon2,rssiBeacon3,rssiBeacon4,rssiBeacon5,toptv;
     private BeaconManager beaconManager;
@@ -46,12 +51,21 @@ public class MainActivity extends AppCompatActivity {
     private String candidato = "";
     private final int CHECK_CODE = 0x1;
     private Speaker speaker;
+    private final int SHORT_DURATION = 1200;
+    private SensorManager mSensorManager;
+    private final float[] mAccelerometerReading = new float[3];
+    private final float[] mMagnetometerReading = new float[3];
+    private final float[] mRotationMatrix = new float[9];
+    private final float[] mOrientationAngles = new float[3];
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+
         initViews();
         fillMap();
         beaconManager = new BeaconManager(this);
@@ -196,6 +210,9 @@ public class MainActivity extends AppCompatActivity {
                                     toptv.setText("AND THE AMI GOES TO " + equipoGanador);
                                     speaker.allow(true);
                                     speaker.speak(neightborArray[actualPos].getAudio());
+                                    speaker.pause(SHORT_DURATION);
+                                    //verificar la brujula del celu y sugerir los poi de adelante y atras
+
                                     j=3;
                                 }
 
@@ -271,6 +288,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
+        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
         SystemRequirementsChecker.checkWithDefaultDialogs(this);
 
         beaconManager.connect(new BeaconManager.ServiceReadyCallback() {
@@ -284,6 +304,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         beaconManager.stopRanging(region);
+        mSensorManager.unregisterListener(this);
+
         super.onPause();
     }
 
@@ -310,4 +332,34 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor == mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)) {
+            System.arraycopy(event.values, 0, mAccelerometerReading,0, mAccelerometerReading.length);
+        }
+        else if (event.sensor == mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)) {
+            System.arraycopy(event.values, 0, mMagnetometerReading,0, mMagnetometerReading.length);
+        }
+    }
+
+    // Compute the three orientation angles based on the most recent readings from
+    // the device's accelerometer and magnetometer.
+    public void updateOrientationAngles() {
+        // Update rotation matrix, which is needed to update orientation angles.
+        mSensorManager.getRotationMatrix(mRotationMatrix, null,
+                mAccelerometerReading, mMagnetometerReading);
+
+        // "mRotationMatrix" now has up-to-date information.
+
+        mSensorManager.getOrientation(mRotationMatrix, mOrientationAngles);
+
+        // "mOrientationAngles" now has up-to-date information.
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
 }
