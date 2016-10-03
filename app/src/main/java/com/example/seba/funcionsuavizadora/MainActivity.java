@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private TreeMap<Integer, String> equiposMap;
     private String neightborArray[] = new String[5];
     private int actualPos = 0;
-    private String candidato = "equipoVerde";
+    private String candidato = "";
 
 
     @Override
@@ -177,9 +177,18 @@ public class MainActivity extends AppCompatActivity {
                                     equipoGanador = candidato;
                                     actualPos--;
                                 }
+                                if(candidato.equals("")){
+                                    candidato = equiposMap.values().toArray()[0].toString();
+                                    equipoGanador = candidato;
+                                    for (int k=0;k<neightborArray.length;k++){
+                                        if (neightborArray[k].equals(equipoGanador)){
+                                            actualPos = k;
+                                        }
+                                    }
+                                }
                                 j--;
                                 if (j==0) {
-                                    toptv.setText("AND THE AMI GOES FOR " + equipoGanador);
+                                    toptv.setText("AND THE AMI GOES TO " + equipoGanador);
                                     j=3;
                                 }
 
