@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 
+import Models.Poi;
+
 public class MainActivity extends AppCompatActivity {
 
     private TextView rssiBeacon1,rssiBeacon2,rssiBeacon3,rssiBeacon4,rssiBeacon5,toptv;
@@ -36,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     public int j=3;
     private String equipoGanador;
     private TreeMap<Integer, String> equiposMap;
-    private String neightborArray[] = new String[5];
+    private Poi neightborArray[] = new Poi[5];
     private int actualPos = 0;
     private String candidato = "";
 
@@ -169,11 +171,11 @@ public class MainActivity extends AppCompatActivity {
                             //agregar filtros oblicuos de espalda
                             try {
                                 candidato = equiposMap.values().toArray()[0].toString();
-                                if (candidato.equals(neightborArray[actualPos +1])){
+                                if (candidato.equals(neightborArray[actualPos +1].getNombreEquipo())){
                                     equipoGanador = candidato;
                                     actualPos++;
                                 }
-                                if (candidato.equals(neightborArray[actualPos -1])){
+                                if (candidato.equals(neightborArray[actualPos -1].getNombreEquipo())){
                                     equipoGanador = candidato;
                                     actualPos--;
                                 }
@@ -181,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
                                     candidato = equiposMap.values().toArray()[0].toString();
                                     equipoGanador = candidato;
                                     for (int k=0;k<neightborArray.length;k++){
-                                        if (neightborArray[k].equals(equipoGanador)){
+                                        if (neightborArray[k].getNombreEquipo().equals(equipoGanador)){
                                             actualPos = k;
                                         }
                                     }
@@ -238,11 +240,17 @@ public class MainActivity extends AppCompatActivity {
         beaconsSoporte.put(13451,0);    //minor del verde2
         beaconsSoporte.put(20799,0);    //minor del celeste
 
-        neightborArray[0] = "equipoVerde";
-        neightborArray[1] = "equipoRemolacha";
-        neightborArray[2] = "equipoAzul";
-        neightborArray[3] = "equipoCandy";
-        neightborArray[4] = "equipoAmarillo";
+//        neightborArray[0] = "equipoVerde";
+//        neightborArray[1] = "equipoRemolacha";
+//        neightborArray[2] = "equipoAzul";
+//        neightborArray[3] = "equipoCandy";
+//        neightborArray[4] = "equipoAmarillo";
+
+        neightborArray[0] = new Poi("equipoVerde","Entrada");
+        neightborArray[1] = new Poi("equipoRemolacha","Escaleras");
+        neightborArray[2] = new Poi("equipoAzul", "Baños");
+        neightborArray[3] = new Poi("equipoCandy","Molinetes");
+        neightborArray[4] = new Poi("equipoAmarillo","Anden");
     }
 
     private void initViews() {
