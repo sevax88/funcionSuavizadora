@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private TextView soporteAmarillo,soporteCandy,soporteRemolacha,equipoAmarillotv,equipoCandytv,equipoRemolachatv,equipoVerdetv,soporteVerde,soporteAzul,equipoAzultv;
     private Integer rssiCarry;
     private int equipoAmarillo,equipoCandy,equipoRemolacha,equipoVerde,equipoAzul;
-    public int j=3;
     private String equipoGanador;
     private TreeMap<Integer, String> equiposMap;
     private Poi neightborArray[] = new Poi[5];
@@ -58,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private final float[] mRotationMatrix = new float[9];
     private final float[] mOrientationAngles = new float[3];
     private boolean firstTime = true;
-
+    private int delay= 7;
 
 
     @Override
@@ -78,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onBeaconsDiscovered(Region region, final List<Beacon> list) {
                 Log.v("onBeaconDiscover","se descubrio un beacon - tiempo: " + System.currentTimeMillis() + "list size =" + list.size());
                 if (!list.isEmpty()) {
+                    delay--;
                     Log.v("entrada al listener", String.valueOf(listenerCount));
                     runOnUiThread(new Runnable() {
                         @Override
@@ -187,44 +187,41 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             equiposMap.put(equipoCandy, "equipoCandy");
                             equiposMap.put(equipoAmarillo, "equipoAmarillo");
                             equiposMap.put(equipoVerde, "equipoVerde");
-                            equiposMap.put(equipoAzul,"equipoAzul");
-                            try {
-                                candidato = equiposMap.values().toArray()[0].toString();
-                                if (candidato.equals(neightborArray[actualPos +1].getNombreEquipo())){
-                                    equipoGanador = candidato;
-                                    actualPos++;
-                                }
-                                if (actualPos!= 0 && candidato.equals(neightborArray[actualPos -1].getNombreEquipo())){
-                                    equipoGanador = candidato;
-                                    actualPos--;
-                                }
-                                if(firstTime){
-                                    firstTime = false;
-                                    equipoGanador = candidato;
-                                    for (int k=0;k<neightborArray.length;k++){
-                                        if (neightborArray[k].getNombreEquipo().equals(equipoGanador)){
-                                            actualPos = k;
+                            equiposMap.put(equipoAzul, "equipoAzul");
+                            if(delay<0) {
+                                try {
+                                    candidato = equiposMap.values().toArray()[0].toString();
+                                    if (candidato.equals(neightborArray[actualPos + 1].getNombreEquipo())) {
+                                        equipoGanador = candidato;
+                                        actualPos++;
+                                    }
+                                    if (actualPos != 0 && candidato.equals(neightborArray[actualPos - 1].getNombreEquipo())) {
+                                        equipoGanador = candidato;
+                                        actualPos--;
+                                    }
+                                    if (firstTime) {
+                                        firstTime = false;
+                                        equipoGanador = candidato;
+                                        for (int k = 0; k <= neightborArray.length; k++) {
+                                            if (neightborArray[k].getNombreEquipo().equals(equipoGanador)) {
+                                                actualPos = k;
+                                            }
                                         }
                                     }
+                                        toptv.setText("AND THE AMI GOES TO " + equipoGanador);
+                                        actualPostv.setText("actualPos= " + String.valueOf(actualPos));
+                                        speaker.allow(true);
+                                        speaker.speak(neightborArray[actualPos].getAudio());
+//                                        speaker.pause(SHORT_DURATION);
+                                        //verificar la brujula del celu y sugerir los poi de adelante y atras
+
+
+                                } catch (Exception e) {
+
                                 }
-                                j--;
-                                if (j==0) {
-                                    toptv.setText("AND THE AMI GOES TO " + equipoGanador);
-                                    actualPostv.setText(String.valueOf(actualPos));
-//                                    speaker.allow(true);
-//                                    speaker.speak(neightborArray[actualPos].getAudio());
-//                                    speaker.pause(SHORT_DURATION);
-                                    //verificar la brujula del celu y sugerir los poi de adelante y atras
-
-                                    j=3;
-                                }
-
-                            }catch (Exception e){
-
+                                resetearEquipos();
+                                equiposMap.clear();
                             }
-                            resetearEquipos();
-                            equiposMap.clear();
-
                         }
                     });
                 }

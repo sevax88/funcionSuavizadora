@@ -35,7 +35,8 @@ public class Speaker implements TextToSpeech.OnInitListener {
         if(status == TextToSpeech.SUCCESS){
             // Change this to match your
             // locale
-            tts.setLanguage(Locale.ENGLISH);
+//            tts.setLanguage(Locale.ENGLISH);
+            tts.setLanguage(new Locale("spa","ESP"));
             ready = true;
         }else{
             ready = false;
