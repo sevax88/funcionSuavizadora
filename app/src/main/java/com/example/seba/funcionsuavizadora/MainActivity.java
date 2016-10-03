@@ -191,13 +191,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             equiposMap.put(equipoAzul, "equipoAzul");
                             try {
                                 candidato = equiposMap.values().toArray()[0].toString();
+                                if (candidato.equals(equipoGanador)){
+                                    speaker.allow(false);
+                                }
                                 if (candidato.equals(neightborArray[actualPos + 1].getNombreEquipo())) {
                                     equipoGanador = candidato;
                                     actualPos++;
+                                    speaker.allow(true);
                                 }
                                 if (actualPos != 0 && candidato.equals(neightborArray[actualPos - 1].getNombreEquipo())) {
                                     equipoGanador = candidato;
                                     actualPos--;
+                                    speaker.allow(true);
                                 }
                                 if (firstTime) {
                                     firstTime = false;
@@ -205,14 +210,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                     for (int k = 0; k <= neightborArray.length; k++) {
                                         if (neightborArray[k].getNombreEquipo().equals(equipoGanador)) {
                                             actualPos = k;
+                                            speaker.allow(true);
                                         }
                                     }
                                 }
                                 toptv.setText("AND THE AMI GOES TO " + equipoGanador);
                                 actualPostv.setText("actualPos= " + String.valueOf(actualPos));
-                                speaker.allow(true);
                                 speaker.speak(neightborArray[actualPos].getAudio());
-//                                        speaker.pause(SHORT_DURATION);
                                 //verificar la brujula del celu y sugerir los poi de adelante y atras
 
 
