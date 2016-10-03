@@ -34,7 +34,7 @@ import Utils.Speaker;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
-    private TextView rssiBeacon1,rssiBeacon2,rssiBeacon3,rssiBeacon4,rssiBeacon5,toptv;
+    private TextView rssiBeacon1,rssiBeacon2,rssiBeacon3,rssiBeacon4,rssiBeacon5,toptv,actualPostv;
     private BeaconManager beaconManager;
     private Region region;
     private int listenerCount = 0;
@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private final float[] mMagnetometerReading = new float[3];
     private final float[] mRotationMatrix = new float[9];
     private final float[] mOrientationAngles = new float[3];
+    private boolean firstTime = true;
 
 
 
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        checkTTS();
 
         initViews();
         fillMap();
@@ -185,19 +187,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             equiposMap.put(equipoCandy, "equipoCandy");
                             equiposMap.put(equipoAmarillo, "equipoAmarillo");
                             equiposMap.put(equipoVerde, "equipoVerde");
-                            equiposMap.put(equipoAzul," equipoAzul");
+                            equiposMap.put(equipoAzul,"equipoAzul");
                             try {
                                 candidato = equiposMap.values().toArray()[0].toString();
                                 if (candidato.equals(neightborArray[actualPos +1].getNombreEquipo())){
                                     equipoGanador = candidato;
                                     actualPos++;
                                 }
-                                if (candidato.equals(neightborArray[actualPos -1].getNombreEquipo())){
+                                if (actualPos!= 0 && candidato.equals(neightborArray[actualPos -1].getNombreEquipo())){
                                     equipoGanador = candidato;
                                     actualPos--;
                                 }
-                                if(candidato.equals("")){
-                                    candidato = equiposMap.values().toArray()[0].toString();
+                                if(firstTime){
+                                    firstTime = false;
                                     equipoGanador = candidato;
                                     for (int k=0;k<neightborArray.length;k++){
                                         if (neightborArray[k].getNombreEquipo().equals(equipoGanador)){
@@ -208,9 +210,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 j--;
                                 if (j==0) {
                                     toptv.setText("AND THE AMI GOES TO " + equipoGanador);
-                                    speaker.allow(true);
-                                    speaker.speak(neightborArray[actualPos].getAudio());
-                                    speaker.pause(SHORT_DURATION);
+                                    actualPostv.setText(String.valueOf(actualPos));
+//                                    speaker.allow(true);
+//                                    speaker.speak(neightborArray[actualPos].getAudio());
+//                                    speaker.pause(SHORT_DURATION);
                                     //verificar la brujula del celu y sugerir los poi de adelante y atras
 
                                     j=3;
@@ -282,6 +285,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         equipoAzultv = (TextView)findViewById(R.id.equipoAzul);
 
         toptv = (TextView)findViewById(R.id.toptv);
+        actualPostv = (TextView)findViewById(R.id.actualPostv);
     }
 
 
@@ -347,8 +351,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     // the device's accelerometer and magnetometer.
     public void updateOrientationAngles() {
         // Update rotation matrix, which is needed to update orientation angles.
-        mSensorManager.getRotationMatrix(mRotationMatrix, null,
-                mAccelerometerReading, mMagnetometerReading);
+        mSensorManager.getRotationMatrix(mRotationMatrix, null,mAccelerometerReading, mMagnetometerReading);
 
         // "mRotationMatrix" now has up-to-date information.
 
