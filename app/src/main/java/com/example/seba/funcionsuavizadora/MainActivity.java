@@ -12,6 +12,8 @@ import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.widget.TextView;
 
 import com.estimote.sdk.Beacon;
@@ -34,7 +36,7 @@ import java.util.UUID;
 import Models.Poi;
 import Utils.Speaker;
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener {
+public class MainActivity extends AppCompatActivity implements SensorEventListener,GestureDetector.OnDoubleTapListener {
 
     private TextView rssiBeacon1,rssiBeacon2,rssiBeacon3,rssiBeacon4,rssiBeacon5,toptv,actualPostv,azimuthtv;
     private BeaconManager beaconManager;
@@ -414,6 +416,42 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
+    @Override
+    public boolean onSingleTapConfirmed(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public boolean onDoubleTap(MotionEvent e) {
+        suguerirDestinos(equipoGanador,azimuth);
+        return false;
+    }
+
+    @Override
+    public boolean onDoubleTapEvent(MotionEvent e) {
+        return false;
+    }
+
+    private void suguerirDestinos(String equipoGanador, float azimuth) {
+        String direccion = "Norte";
+        if ((azimuth >= 345 && azimuth < 360) || (azimuth >=0 && azimuth < 75)){
+            direccion = "Norte";
+        }
+        if (azimuth >= 75 && azimuth < 165){
+            direccion = "Oeste";
+        }
+        if (azimuth >= 165 && azimuth < 255){
+            direccion = "Sur";
+        }
+        if (azimuth >= 255 & azimuth < 345){
+            direccion = "Este";
+        }
+
+        String sugerencia = mapLocationAudios.get(equipoGanador).get(direccion);
+        speaker.allow(true);
+        speaker.speak(sugerencia);
+
+    }
 
 
 }
