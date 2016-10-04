@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     final float beta = 0.97f;
     private Sensor gsensor;
     private Sensor msensor;
+    private HashMap<String,HashMap<String,String>> mapLocationAudios ;
 
 
     @Override
@@ -72,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         checkTTS();
 
         initViews();
-        fillMap();
+        fillMaps();
         beaconManager = new BeaconManager(this);
         beaconManager.setForegroundScanPeriod(950,0);
         region = new Region("ranged region", null, null, null);
@@ -245,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         equipoAzul=0;
     }
 
-    private void fillMap() {
+    private void fillMaps() {
         readsBc = new HashMap<>();
         beaconsSoporte = new HashMap<>();
 
@@ -267,6 +268,33 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         neightborArray[2] = new Poi("equipoAzul", "Baños");
         neightborArray[3] = new Poi("equipoCandy","Molinetes");
         neightborArray[4] = new Poi("equipoAmarillo","Anden");
+
+        HashMap<String,String> equipoVerdeSubMap = new HashMap<>();
+        equipoVerdeSubMap.put("Norte","Para ir a las escaleras primera salida a la derecha,dos metros");
+        equipoVerdeSubMap.put("Este","");
+        equipoVerdeSubMap.put("Oeste","");
+        equipoVerdeSubMap.put("Sur","");
+        mapLocationAudios.put("equipoVerde",equipoVerdeSubMap);
+
+        HashMap<String,String> equipoRemolachaSubMap = new HashMap<>();
+        equipoRemolachaSubMap.put("Norte","Para ir a los molinetes,primera salida a la derecha, dos metros");
+        equipoRemolachaSubMap.put("Este","Para ir a los Baños,siga derecho dos metros");
+        equipoRemolachaSubMap.put("Oeste","");
+        equipoRemolachaSubMap.put("Sur","");
+        mapLocationAudios.put("equipoRemolacha",equipoRemolachaSubMap);
+
+        HashMap<String,String> equipoAzulSubMap = new HashMap<>();
+        equipoAzulSubMap.put("Norte","Para ir al anden primera salida a la izquierda,dos metros");
+        equipoAzulSubMap.put("Este","");
+        equipoAzulSubMap.put("Oeste","Para ir a los molinetes,siga derecho,dos metros");
+        equipoAzulSubMap.put("Sur","Para ir a la entrada,primera salida a la derecha,dos metros");
+        mapLocationAudios.put("equipoAzul",equipoAzulSubMap);
+
+        HashMap<String,String> equipoCandySubMap = new HashMap<>();
+        equipoCandySubMap.put("Norte","");
+        equipoCandySubMap.put("Este","")
+
+
     }
 
     private void initViews() {
@@ -316,7 +344,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onPause() {
         beaconManager.stopRanging(region);
         mSensorManager.unregisterListener(this);
-
         super.onPause();
     }
 
@@ -366,7 +393,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             if (success) {
                 float orientation[] = new float[3];
                 SensorManager.getOrientation(Ri, orientation);
-                // Log.d(TAG, "azimuth (rad): " + azimuth);
                 azimuth = (float) Math.toDegrees(orientation[0]); // orientation
                 azimuth = (azimuth + 360) % 360;
                 azimuthtv.setText(String.valueOf(azimuth));
@@ -378,5 +404,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+
+
 
 }
