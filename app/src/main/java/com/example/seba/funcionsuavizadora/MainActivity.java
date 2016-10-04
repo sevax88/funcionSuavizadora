@@ -55,10 +55,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private SensorManager mSensorManager;
     private final float[] mAccelerometerReading = new float[3];
     private final float[] mMagnetometerReading = new float[3];
-    private final float[] mRotationMatrix = new float[9];
     private final float[] mOrientationAngles = new float[3];
     private boolean firstTime = true;
     private Handler handler = new Handler();
+    private float azimuth;
+    private float[] mGravity = new float[3];
+    private float[] mGeomagnetic = new float[3];
+    final float beta = 0.97f;
 
 
     @Override
@@ -227,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             equiposMap.clear();
 
                         }
-                    },3000);
+                    },4000);
                 }
             }
         });
@@ -340,23 +343,30 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor == mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)) {
-            System.arraycopy(event.values, 0, mAccelerometerReading,0, mAccelerometerReading.length);
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            mGravity[0] = beta * mGravity[0] + (1 - beta) * event.values[0];
+            mGravity[1] = beta * mGravity[1] + (1 - beta) * event.values[1];
+            mGravity[2] = beta * mGravity[2] + (1 - beta) * event.values[2];
         }
-        else if (event.sensor == mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)) {
-            System.arraycopy(event.values, 0, mMagnetometerReading,0, mMagnetometerReading.length);
+        else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+            mGeomagnetic[0] = beta * mGeomagnetic[0] + (1 - beta) * event.values[0];
+            mGeomagnetic[1] = beta * mGeomagnetic[1] + (1 - beta) * event.values[1];
+            mGeomagnetic[2] = beta * mGeomagnetic[2] + (1 - beta) * event.values[2];
         }
+        updateOrientationAngles();
     }
 
     // Compute the three orientation angles based on the most recent readings from
     // the device's accelerometer and magnetometer.
     public void updateOrientationAngles() {
         // Update rotation matrix, which is needed to update orientation angles.
-        mSensorManager.getRotationMatrix(mRotationMatrix, null,mAccelerometerReading, mMagnetometerReading);
-
+        float Ri[] = new float[9];
+        float I[] = new float[9];
+        mSensorManager.getRotationMatrix(Ri, I,mAccelerometerReading, mMagnetometerReading);
         // "mRotationMatrix" now has up-to-date information.
-
-        mSensorManager.getOrientation(mRotationMatrix, mOrientationAngles);
+        float orientation[] = new float[3];
+        mSensorManager.getOrientation(Ri, orientation);
+        azimuth = mOrientationAngles[0];
 
         // "mOrientationAngles" now has up-to-date information.
     }
