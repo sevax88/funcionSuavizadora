@@ -131,6 +131,14 @@
         android:layout_height="wrap_content"
         android:id="@+id/actualPostv"
         android:text="actualPos="
+        android:layout_marginBottom="15dp"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/azimuthtv"
+        android:text="azimuth="
         />
 
 </LinearLayout>

@@ -6,6 +6,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
@@ -35,7 +36,7 @@ import Utils.Speaker;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
-    private TextView rssiBeacon1,rssiBeacon2,rssiBeacon3,rssiBeacon4,rssiBeacon5,toptv,actualPostv;
+    private TextView rssiBeacon1,rssiBeacon2,rssiBeacon3,rssiBeacon4,rssiBeacon5,toptv,actualPostv,azimuthtv;
     private BeaconManager beaconManager;
     private Region region;
     private int listenerCount = 0;
@@ -53,15 +54,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Speaker speaker;
     private final int SHORT_DURATION = 1200;
     private SensorManager mSensorManager;
-    private final float[] mAccelerometerReading = new float[3];
-    private final float[] mMagnetometerReading = new float[3];
-    private final float[] mOrientationAngles = new float[3];
     private boolean firstTime = true;
     private Handler handler = new Handler();
     private float azimuth;
     private float[] mGravity = new float[3];
     private float[] mGeomagnetic = new float[3];
     final float beta = 0.97f;
+    private Sensor gsensor;
+    private Sensor msensor;
 
 
     @Override
@@ -290,15 +290,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         toptv = (TextView)findViewById(R.id.toptv);
         actualPostv = (TextView)findViewById(R.id.actualPostv);
+        azimuthtv = (TextView)findViewById(R.id.azimuthtv);
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
+        gsensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        msensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        mSensorManager.registerListener(this, gsensor,SensorManager.SENSOR_DELAY_GAME);
+        mSensorManager.registerListener(this, msensor,SensorManager.SENSOR_DELAY_GAME);
 
-        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
-        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
         SystemRequirementsChecker.checkWithDefaultDialogs(this);
 
         beaconManager.connect(new BeaconManager.ServiceReadyCallback() {
@@ -319,7 +322,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     protected void onStart() {
-        super.onStart();
+         super.onStart();
     }
 
     private void checkTTS(){
@@ -343,32 +346,32 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            mGravity[0] = beta * mGravity[0] + (1 - beta) * event.values[0];
-            mGravity[1] = beta * mGravity[1] + (1 - beta) * event.values[1];
-            mGravity[2] = beta * mGravity[2] + (1 - beta) * event.values[2];
-        }
-        else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
-            mGeomagnetic[0] = beta * mGeomagnetic[0] + (1 - beta) * event.values[0];
-            mGeomagnetic[1] = beta * mGeomagnetic[1] + (1 - beta) * event.values[1];
-            mGeomagnetic[2] = beta * mGeomagnetic[2] + (1 - beta) * event.values[2];
-        }
-        updateOrientationAngles();
-    }
+        final float beta = 0.97f;
+        synchronized (this) {
+            if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
 
-    // Compute the three orientation angles based on the most recent readings from
-    // the device's accelerometer and magnetometer.
-    public void updateOrientationAngles() {
-        // Update rotation matrix, which is needed to update orientation angles.
-        float Ri[] = new float[9];
-        float I[] = new float[9];
-        mSensorManager.getRotationMatrix(Ri, I,mAccelerometerReading, mMagnetometerReading);
-        // "mRotationMatrix" now has up-to-date information.
-        float orientation[] = new float[3];
-        mSensorManager.getOrientation(Ri, orientation);
-        azimuth = mOrientationAngles[0];
+                mGravity[0] = beta * mGravity[0] + (1 - beta)* event.values[0];
+                mGravity[1] = beta * mGravity[1] + (1 - beta)* event.values[1];
+                mGravity[2] = beta * mGravity[2] + (1 - beta)* event.values[2];
+            }
+            if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+                mGeomagnetic[0] = beta * mGeomagnetic[0] + (1 - beta)* event.values[0];
+                mGeomagnetic[1] = beta * mGeomagnetic[1] + (1 - beta)* event.values[1];
+                mGeomagnetic[2] = beta * mGeomagnetic[2] + (1 - beta)*event.values[2];
+            }
 
-        // "mOrientationAngles" now has up-to-date information.
+            float Ri[] = new float[9];
+            float I[] = new float[9];
+            boolean success = SensorManager.getRotationMatrix(Ri, I, mGravity,mGeomagnetic);
+            if (success) {
+                float orientation[] = new float[3];
+                SensorManager.getOrientation(Ri, orientation);
+                // Log.d(TAG, "azimuth (rad): " + azimuth);
+                azimuth = (float) Math.toDegrees(orientation[0]); // orientation
+                azimuth = (azimuth + 360) % 360;
+                azimuthtv.setText(String.valueOf(azimuth));
+            }
+        }
     }
 
     @Override
