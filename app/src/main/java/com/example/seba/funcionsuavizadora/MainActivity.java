@@ -292,8 +292,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         HashMap<String,String> equipoCandySubMap = new HashMap<>();
         equipoCandySubMap.put("Norte","");
-        equipoCandySubMap.put("Este","")
+        equipoCandySubMap.put("Este","Para ir al anden,segui derecho,dos metros");
+        equipoCandySubMap.put("Oeste","");
+        equipoCandySubMap.put("Sur","Para ir a los molinetes, primera salida a la izquierda,dos metros");
+        mapLocationAudios.put("equipoCandy",equipoCandySubMap);
 
+        HashMap<String,String> equipoAmarilloSubMap = new HashMap<>();
+        equipoAmarilloSubMap.put("Norte","");
+        equipoAmarilloSubMap.put("Este","");
+        equipoAmarilloSubMap.put("Oeste","Para ir a los molinetes,siga derecha,dos metros");
+        equipoAmarilloSubMap.put("Sur","Para ir a los baños,primera salida a la derecha,dos metros");
+        mapLocationAudios.put("equipoAmarillo",equipoAmarilloSubMap);
 
     }
 
