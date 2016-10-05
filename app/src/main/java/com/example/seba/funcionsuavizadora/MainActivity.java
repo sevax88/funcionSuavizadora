@@ -36,21 +36,21 @@ import java.util.UUID;
 import Models.Poi;
 import Utils.Speaker;
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener,GestureDetector.OnDoubleTapListener {
+public class MainActivity extends AppCompatActivity implements SensorEventListener,GestureDetector.OnGestureListener,GestureDetector.OnDoubleTapListener {
 
     private TextView rssiBeacon1,rssiBeacon2,rssiBeacon3,rssiBeacon4,rssiBeacon5,toptv,actualPostv,azimuthtv;
     private BeaconManager beaconManager;
     private Region region;
     private int listenerCount = 0;
     private Map<Integer,Integer> readsBc,beaconsSoporte;
-    private double alpha = 0.1;
+    private double alpha = 0.7;
     private TextView soporteAmarillo,soporteCandy,soporteRemolacha,equipoAmarillotv,equipoCandytv,equipoRemolachatv,equipoVerdetv,soporteVerde,soporteAzul,equipoAzultv;
     private Integer rssiCarry;
     private int equipoAmarillo,equipoCandy,equipoRemolacha,equipoVerde,equipoAzul;
     private String equipoGanador;
     private TreeMap<Integer, String> equiposMap;
     private Poi neightborArray[] = new Poi[5];
-    private int actualPos = 0;
+    private int actualPos ;
     private String candidato = "";
     private final int CHECK_CODE = 0x1;
     private Speaker speaker;
@@ -64,32 +64,38 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     final float beta = 0.97f;
     private Sensor gsensor;
     private Sensor msensor;
-    private HashMap<String,HashMap<String,String>> mapLocationAudios ;
+    private HashMap<String,HashMap<String,String>> mapLocationAudios = new HashMap<>() ;
+    private GestureDetector detector;
+    int j=2;
+    private boolean b=true;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+//        detector = new GestureDetector(this, this);
+//        detector.setOnDoubleTapListener(this);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         checkTTS();
 
         initViews();
         fillMaps();
         beaconManager = new BeaconManager(this);
-        beaconManager.setForegroundScanPeriod(950,0);
+        beaconManager.setForegroundScanPeriod(350,0);
         region = new Region("ranged region", null, null, null);
         beaconManager.setRangingListener(new BeaconManager.RangingListener() {
             @Override
             public void onBeaconsDiscovered(Region region, final List<Beacon> list) {
-                Log.v("onBeaconDiscover","se descubrio un beacon - tiempo: " + System.currentTimeMillis() + "list size =" + list.size());
-                if (!list.isEmpty()) {
+                Log.v("onBeaconDiscover", "se descubrio un beacon - tiempo: " + System.currentTimeMillis() + "list size =" + list.size());
+                if (list.size()==10) {
                     Log.v("entrada al listener", String.valueOf(listenerCount));
 
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             for (int i = 0; i < list.size(); i++) {
+                                speaker.allow(false);
                                 Beacon beacon = list.get(i);
                                 if (readsBc.containsKey(beacon.getMinor())) {
                                     int lastRssi = readsBc.get(beacon.getMinor());
@@ -143,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                             if (Math.abs(rssiCarry - actualRssi) > 10) {
                                                 equipoCandy = equipoCandy - 10;
                                             }
-                                            if (Math.abs(rssiCarry - actualRssi) <10) {
+                                            if (Math.abs(rssiCarry - actualRssi) < 10) {
                                                 equipoCandy = equipoCandy - 5;
                                             }
                                             equipoCandytv.setText("equipo candy = " + String.valueOf(equipoCandy));
@@ -152,10 +158,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                             soporteRemolacha.setText("rssi soporte remolacha = " + actualRssi);
                                             rssiCarry = readsBc.get(1731);
                                             equipoRemolacha = rssiCarry + actualRssi;
-                                            if (Math.abs(rssiCarry - actualRssi)>10){
+                                            if (Math.abs(rssiCarry - actualRssi) > 10) {
                                                 equipoRemolacha = equipoRemolacha - 10;
                                             }
-                                            if (Math.abs(rssiCarry - actualRssi)<10){
+                                            if (Math.abs(rssiCarry - actualRssi) < 10) {
                                                 equipoRemolacha = equipoRemolacha - 5;
                                             }
                                             equipoRemolachatv.setText("equipo remolacha = " + String.valueOf(equipoRemolacha));
@@ -164,10 +170,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                             soporteVerde.setText("rssi soporte verde = " + actualRssi);
                                             rssiCarry = readsBc.get(4739);
                                             equipoVerde = rssiCarry + actualRssi;
-                                            if (Math.abs(rssiCarry - actualRssi)>=10){
+                                            if (Math.abs(rssiCarry - actualRssi) >= 10) {
                                                 equipoVerde = equipoVerde - 10;
                                             }
-                                            if (Math.abs(rssiCarry - actualRssi)<10){
+                                            if (Math.abs(rssiCarry - actualRssi) < 10) {
                                                 equipoVerde = equipoVerde - 5;
                                             }
                                             equipoVerdetv.setText("equipo verde = " + String.valueOf(equipoVerde));
@@ -176,11 +182,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                             soporteAzul.setText("rssi soporte azul = " + actualRssi);
                                             rssiCarry = readsBc.get(17578);
                                             equipoAzul = rssiCarry + actualRssi;
-                                            if (Math.abs(rssiCarry - actualRssi)>10){
-                                                equipoAzul = equipoAzul - 20;
+                                            if (Math.abs(rssiCarry - actualRssi) > 10) {
+                                                equipoAzul = equipoAzul - 10;
                                             }
-                                            if (Math.abs(rssiCarry - actualRssi)<10){
-                                                equipoAzul = equipoAzul - 8;
+                                            if (Math.abs(rssiCarry - actualRssi) < 10) {
+                                                equipoAzul = equipoAzul - 5;
                                             }
                                             equipoAzultv.setText("equipo azul = " + String.valueOf(equipoAzul));
                                             break;
@@ -190,41 +196,26 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 }
                             }
                             equiposMap = new TreeMap<Integer, String>();
-                            equiposMap.put(equipoRemolacha,"equipoRemolacha");
+                            equiposMap.put(equipoRemolacha, "equipoRemolacha");
                             equiposMap.put(equipoCandy, "equipoCandy");
                             equiposMap.put(equipoAmarillo, "equipoAmarillo");
                             equiposMap.put(equipoVerde, "equipoVerde");
                             equiposMap.put(equipoAzul, "equipoAzul");
                             try {
-                                candidato = equiposMap.values().toArray()[0].toString();
-                                if (candidato.equals(equipoGanador)){
-                                    speaker.allow(false);
-                                }
-                                if (candidato.equals(neightborArray[actualPos + 1].getNombreEquipo())) {
-                                    equipoGanador = candidato;
-                                    actualPos++;
-                                    speaker.allow(true);
-                                }
-                                if (actualPos != 0 && candidato.equals(neightborArray[actualPos - 1].getNombreEquipo())) {
-                                    equipoGanador = candidato;
-                                    actualPos--;
-                                    speaker.allow(true);
-                                }
-                                if (firstTime) {
-                                    firstTime = false;
-                                    equipoGanador = candidato;
-                                    for (int k = 0; k <= neightborArray.length; k++) {
-                                        if (neightborArray[k].getNombreEquipo().equals(equipoGanador)) {
-                                            actualPos = k;
-                                            speaker.allow(true);
-                                        }
-                                    }
-                                }
-                                toptv.setText("AND THE AMI GOES TO " + equipoGanador);
-                                actualPostv.setText("actualPos= " + String.valueOf(actualPos));
-                                speaker.speak(neightborArray[actualPos].getAudio());
-                                //verificar la brujula del celu y sugerir los poi de adelante y atras
 
+                                if (equipoGanador!=null && !equiposMap.values().toArray()[0].toString().equals(equipoGanador)){
+                                    b=true;
+                                }
+
+                                if ( equiposMap.firstKey()<=133 && b) {
+                                    equipoGanador = equiposMap.values().toArray()[0].toString();
+                                    toptv.setText("AND THE AMI GOES TO " + equipoGanador);
+                                    speaker.allow(true);
+                                    speaker.speak(equipoGanador.toString());
+                                    speaker.allow(false);
+                                    b = false;
+
+                                }
 
                             } catch (Exception e) {
 
@@ -233,7 +224,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             equiposMap.clear();
 
                         }
-                    },4000);
+                    }, 4000);
                 }
             }
         });
@@ -423,7 +414,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public boolean onDoubleTap(MotionEvent e) {
-        suguerirDestinos(equipoGanador,azimuth);
+//        suguerirDestinos(equipoGanador,azimuth);
         return false;
     }
 
@@ -454,4 +445,39 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
 
+    @Override
+    public boolean onDown(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent e) {
+
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        return false;
+    }
+
+    @Override
+    public void onLongPress(MotionEvent e) {
+
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        return false;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+//        this.detector.onTouchEvent(event);
+        return super.onTouchEvent(event);
+    }
 }
