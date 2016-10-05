@@ -65,6 +65,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Sensor gsensor;
     private Sensor msensor;
     private HashMap<String,HashMap<String,String>> mapLocationAudios ;
+    private float sensibilidadPaso ;
+    private boolean isWalking = false;
 
 
     @Override
@@ -339,7 +341,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         gsensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         msensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         mSensorManager.registerListener(this, gsensor,SensorManager.SENSOR_DELAY_GAME);
-        mSensorManager.registerListener(this, msensor,SensorManager.SENSOR_DELAY_GAME);
+        mSensorManager.registerListener(this, msensor, SensorManager.SENSOR_DELAY_GAME);
 
         SystemRequirementsChecker.checkWithDefaultDialogs(this);
 
@@ -391,6 +393,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 mGravity[0] = beta * mGravity[0] + (1 - beta)* event.values[0];
                 mGravity[1] = beta * mGravity[1] + (1 - beta)* event.values[1];
                 mGravity[2] = beta * mGravity[2] + (1 - beta)* event.values[2];
+                if (!isWalking && mGravity[2]>10){
+                    isWalking = true;
+                    Handler handler2 = new Handler();
+                    handler2.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            isWalking = false;
+                        }
+                    },1000);
+                }
+
             }
             if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
                 mGeomagnetic[0] = beta * mGeomagnetic[0] + (1 - beta)* event.values[0];
