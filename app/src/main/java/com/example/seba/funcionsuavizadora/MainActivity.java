@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         beaconManager.setRangingListener(new BeaconManager.RangingListener() {
             @Override
             public void onBeaconsDiscovered(Region region, final List<Beacon> list) {
-                Log.v("onBeaconDiscover", "se descubrio un beacon - tiempo: " + System.currentTimeMillis() + "list size =" + list.size());
+                Log.v("onBeaconDiscover", "se descubrio un beacon - tiempo: " + System.currentTimeMillis() + " list size =" + list.size());
                 if (list.size()==10) {
                     Log.v("entrada al listener", String.valueOf(listenerCount));
 
