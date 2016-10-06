@@ -23,8 +23,10 @@ import com.estimote.sdk.SystemRequirementsChecker;
 import com.estimote.sdk.telemetry.EstimoteTelemetry;
 
 import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -56,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Speaker speaker;
     private final int SHORT_DURATION = 1200;
     private SensorManager mSensorManager;
-    private boolean firstTime = true;
+    private boolean firstTime = false;
     private Handler handler = new Handler();
     private float azimuth;
     private float[] mGravity = new float[3];
@@ -82,13 +84,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         initViews();
         fillMaps();
         beaconManager = new BeaconManager(this);
-        beaconManager.setForegroundScanPeriod(350,0);
+        beaconManager.setForegroundScanPeriod(270,0);
         region = new Region("ranged region", null, null, null);
         beaconManager.setRangingListener(new BeaconManager.RangingListener() {
             @Override
             public void onBeaconsDiscovered(Region region, final List<Beacon> list) {
-                Log.v("onBeaconDiscover", "se descubrio un beacon - tiempo: " + System.currentTimeMillis() + " list size =" + list.size());
-                if (list.size()==10) {
+                long yourmilliseconds = System.currentTimeMillis();
+                SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm:ss");
+                Date resultdate = new Date(yourmilliseconds);
+                Log.v("onBeaconDiscover", "se descubrio un beacon - tiempo: " + sdf.format(resultdate) + " list size =" + list.size());
+                if (list.size()==10){
+                  firstTime=true;
+                }
+                if (firstTime && list.size()>0) {
                     Log.v("entrada al listener", String.valueOf(listenerCount));
 
                     handler.postDelayed(new Runnable() {
@@ -201,13 +209,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             equiposMap.put(equipoAmarillo, "equipoAmarillo");
                             equiposMap.put(equipoVerde, "equipoVerde");
                             equiposMap.put(equipoAzul, "equipoAzul");
+                            Log.v("primero",equiposMap.firstKey().toString());
                             try {
 
                                 if (equipoGanador!=null && !equiposMap.values().toArray()[0].toString().equals(equipoGanador)){
                                     b=true;
                                 }
 
-                                if ( equiposMap.firstKey()<=133 && b) {
+                                if ( equiposMap.firstKey()>0 && equiposMap.firstKey()<=133 && b) {
                                     equipoGanador = equiposMap.values().toArray()[0].toString();
                                     toptv.setText("AND THE AMI GOES TO " + equipoGanador);
                                     speaker.allow(true);
@@ -273,21 +282,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         equipoRemolachaSubMap.put("Norte","Para ir a los molinetes,primera salida a la derecha, dos metros");
         equipoRemolachaSubMap.put("Este","Para ir a los Baños,siga derecho dos metros");
         equipoRemolachaSubMap.put("Oeste","");
-        equipoRemolachaSubMap.put("Sur","");
+        equipoRemolachaSubMap.put("Sur","Para ir a la entrada, izquierda primera salida a la derecha");
         mapLocationAudios.put("equipoRemolacha",equipoRemolachaSubMap);
 
         HashMap<String,String> equipoAzulSubMap = new HashMap<>();
         equipoAzulSubMap.put("Norte","Para ir al anden primera salida a la izquierda,dos metros");
         equipoAzulSubMap.put("Este","");
         equipoAzulSubMap.put("Oeste","Para ir a los molinetes,siga derecho,dos metros");
-        equipoAzulSubMap.put("Sur","Para ir a la entrada,primera salida a la derecha,dos metros");
+        equipoAzulSubMap.put("Sur","Para ir a la entrada,gire a la derecha,primera salida a la derecha,dos metros");
         mapLocationAudios.put("equipoAzul",equipoAzulSubMap);
 
         HashMap<String,String> equipoCandySubMap = new HashMap<>();
         equipoCandySubMap.put("Norte","");
         equipoCandySubMap.put("Este","Para ir al anden,segui derecho,dos metros");
         equipoCandySubMap.put("Oeste","");
-        equipoCandySubMap.put("Sur","Para ir a los molinetes, primera salida a la izquierda,dos metros");
+        equipoCandySubMap.put("Sur","Para ir a los molinetes,gira a la izquierda, primera salida a la izquierda,dos metros");
         mapLocationAudios.put("equipoCandy",equipoCandySubMap);
 
         HashMap<String,String> equipoAmarilloSubMap = new HashMap<>();
