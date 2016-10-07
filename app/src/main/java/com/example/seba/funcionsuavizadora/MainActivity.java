@@ -424,7 +424,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public boolean onDoubleTap(MotionEvent e) {
-//        suguerirDestinos(equipoGanador,azimuth);
+        suguerirDestinos(equipoGanador,azimuth);
         return false;
     }
 
@@ -487,7 +487,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-//        this.detector.onTouchEvent(event);
+        this.detector.onTouchEvent(event);
         return super.onTouchEvent(event);
     }
 }
