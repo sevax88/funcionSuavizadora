@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Region region;
     private int listenerCount = 0;
     private Map<Integer,Integer> readsBc,beaconsSoporte;
-    private double alpha = 0.7;
+    private double alpha = 0.3;
     private TextView soporteAmarillo,soporteCandy,soporteRemolacha,equipoAmarillotv,equipoCandytv,equipoRemolachatv,equipoVerdetv,soporteVerde,soporteAzul,equipoAzultv;
     private Integer rssiCarry;
     private int equipoAmarillo,equipoCandy,equipoRemolacha,equipoVerde,equipoAzul;
@@ -76,8 +76,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        detector = new GestureDetector(this, this);
-//        detector.setOnDoubleTapListener(this);
+        detector = new GestureDetector(this, this);
+        detector.setOnDoubleTapListener(this);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         checkTTS();
 
@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                         case 20799:
                                             soporteAzul.setText("rssi soporte azul = " + actualRssi);
                                             rssiCarry = readsBc.get(17578);
-                                            equipoAzul = rssiCarry + actualRssi;
+                                            equipoAzul = rssiCarry + actualRssi-5;
                                             if (Math.abs(rssiCarry - actualRssi) > 10) {
                                                 equipoAzul = equipoAzul - 10;
                                             }
