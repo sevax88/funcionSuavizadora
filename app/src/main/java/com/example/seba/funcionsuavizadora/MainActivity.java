@@ -1,5 +1,6 @@
 package com.example.seba.funcionsuavizadora;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
@@ -21,6 +22,9 @@ import com.estimote.sdk.BeaconManager;
 import com.estimote.sdk.Region;
 import com.estimote.sdk.SystemRequirementsChecker;
 import com.estimote.sdk.telemetry.EstimoteTelemetry;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.ActivityRecognition;
 
 import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
@@ -36,9 +40,10 @@ import java.util.TreeMap;
 import java.util.UUID;
 
 import Models.Poi;
+import Utils.ActivityRecognizedService;
 import Utils.Speaker;
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener,GestureDetector.OnGestureListener,GestureDetector.OnDoubleTapListener {
+public class MainActivity extends AppCompatActivity implements SensorEventListener,GestureDetector.OnGestureListener,GestureDetector.OnDoubleTapListener,GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private TextView rssiBeacon1,rssiBeacon2,rssiBeacon3,rssiBeacon4,rssiBeacon5,toptv,actualPostv,azimuthtv;
     private BeaconManager beaconManager;
@@ -70,12 +75,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private GestureDetector detector;
     int j=2;
     private boolean b=true;
+    public GoogleApiClient mApiClient;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        initializeGApiClient();
         detector = new GestureDetector(this, this);
         detector.setOnDoubleTapListener(this);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -241,6 +248,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
+    private void initializeGApiClient() {
+        mApiClient = new GoogleApiClient.Builder(this)
+                .addApi(ActivityRecognition.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+
+        mApiClient.connect();
+    }
+
     private void resetearEquipos() {
         equipoAmarillo = 0;
         equipoRemolacha = 0;
@@ -340,7 +357,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         gsensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         msensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         mSensorManager.registerListener(this, gsensor,SensorManager.SENSOR_DELAY_GAME);
-        mSensorManager.registerListener(this, msensor,SensorManager.SENSOR_DELAY_GAME);
+        mSensorManager.registerListener(this, msensor, SensorManager.SENSOR_DELAY_GAME);
 
         SystemRequirementsChecker.checkWithDefaultDialogs(this);
 
@@ -392,6 +409,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 mGravity[0] = beta * mGravity[0] + (1 - beta)* event.values[0];
                 mGravity[1] = beta * mGravity[1] + (1 - beta)* event.values[1];
                 mGravity[2] = beta * mGravity[2] + (1 - beta)* event.values[2];
+
             }
             if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
                 mGeomagnetic[0] = beta * mGeomagnetic[0] + (1 - beta)* event.values[0];
@@ -411,6 +429,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
         }
     }
+
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -489,5 +508,24 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public boolean onTouchEvent(MotionEvent event) {
         this.detector.onTouchEvent(event);
         return super.onTouchEvent(event);
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Intent intent = new Intent( this, ActivityRecognizedService.class );
+        PendingIntent pendingIntent = PendingIntent.getService( this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT );
+        ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates( mApiClient, 3000, pendingIntent );
+    }
+
+
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
     }
 }
