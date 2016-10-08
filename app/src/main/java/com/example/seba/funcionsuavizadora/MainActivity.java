@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private GestureDetector detector;
     int j=2;
     private boolean b=true;
-
+    private long lastStep;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -212,11 +212,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             Log.v("primero",equiposMap.firstKey().toString());
                             try {
 
+                                long diffLastStep = System.currentTimeMillis() - lastStep;
+
                                 if (equipoGanador!=null && !equiposMap.values().toArray()[0].toString().equals(equipoGanador)){
                                     b=true;
                                 }
 
-                                if (  equiposMap.firstKey()>0 && equiposMap.firstKey()<=133 && b) {
+                                if (diffLastStep < 5000 &&  equiposMap.firstKey()>0 && equiposMap.firstKey()<=133 && b) {
                                     equipoGanador = equiposMap.values().toArray()[0].toString();
                                     toptv.setText("AND THE AMI GOES TO " + equipoGanador);
                                     speaker.allow(true);
@@ -340,7 +342,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         gsensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         msensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         mSensorManager.registerListener(this, gsensor,SensorManager.SENSOR_DELAY_GAME);
-        mSensorManager.registerListener(this, msensor,SensorManager.SENSOR_DELAY_GAME);
+        mSensorManager.registerListener(this, msensor, SensorManager.SENSOR_DELAY_GAME);
 
         SystemRequirementsChecker.checkWithDefaultDialogs(this);
 
@@ -392,6 +394,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 mGravity[0] = beta * mGravity[0] + (1 - beta)* event.values[0];
                 mGravity[1] = beta * mGravity[1] + (1 - beta)* event.values[1];
                 mGravity[2] = beta * mGravity[2] + (1 - beta)* event.values[2];
+                if ((int)mGravity[2]!=9){
+                    lastStep = System.currentTimeMillis();
+                }
+
             }
             if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
                 mGeomagnetic[0] = beta * mGeomagnetic[0] + (1 - beta)* event.values[0];
