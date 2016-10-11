@@ -7,8 +7,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.Build;
-import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,27 +20,19 @@ import com.estimote.sdk.Beacon;
 import com.estimote.sdk.BeaconManager;
 import com.estimote.sdk.Region;
 import com.estimote.sdk.SystemRequirementsChecker;
-import com.estimote.sdk.telemetry.EstimoteTelemetry;
 
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.UUID;
 
-import Models.Poi;
 import Utils.Speaker;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener,GestureDetector.OnGestureListener,GestureDetector.OnDoubleTapListener {
 
-    private TextView rssiBeacon1,rssiBeacon2,rssiBeacon3,rssiBeacon4,rssiBeacon5,toptv,actualPostv,azimuthtv;
+    private TextView rssiBeacon1,rssiBeacon2,rssiBeacon3,rssiBeacon4,rssiBeacon5,toptv,azimuthtv;
     private BeaconManager beaconManager;
     private Region region;
     private int listenerCount = 0;
@@ -53,24 +43,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private int equipoAmarillo,equipoCandy,equipoRemolacha,equipoVerde,equipoAzul;
     private String equipoGanador;
     private TreeMap<Integer, String> equiposMap;
-    private Poi neightborArray[] = new Poi[5];
-    private int actualPos ;
-    private String candidato = "";
     private final int CHECK_CODE = 0x1;
     private Speaker speaker;
-    private final int SHORT_DURATION = 1200;
     private SensorManager mSensorManager;
     private boolean firstTime = false;
-    private Handler handler = new Handler();
     private float azimuth;
     private float[] mGravity = new float[3];
     private float[] mGeomagnetic = new float[3];
-    final float beta = 0.97f;
     private Sensor gsensor;
     private Sensor msensor;
     private HashMap<String,HashMap<String,String>> mapLocationAudios = new HashMap<>() ;
     private GestureDetector detector;
-    int j=2;
     private boolean b=true;
     private long lastStep;
     private LinearLayout linearfiltroPasos;
@@ -101,10 +84,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 }
                 if (firstTime && list.size()>0) {
                     Log.v("entrada al listener", String.valueOf(listenerCount));
-
-//                    handler.postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
                             for (int i = 0; i < list.size(); i++) {
                                 speaker.allow(false);
                                 Beacon beacon = list.get(i);
@@ -113,7 +92,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                     int actualRssi = beacon.getRssi() * (-1);
                                     actualRssi = (int) (alpha * actualRssi + (1 - alpha) * lastRssi);
                                     readsBc.put(beacon.getMinor(), actualRssi);
-
                                     switch (beacon.getMinor()) {
                                         case 28695:
                                             rssiBeacon1.setText("rssi lemon1 - 28695 = " + actualRssi);
@@ -145,60 +123,30 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                             soporteAmarillo.setText("rssi soporte lemon = " + actualRssi);
                                             rssiCarry = readsBc.get(28695);
                                             equipoAmarillo = rssiCarry + actualRssi;
-//                                            if (Math.abs(rssiCarry - actualRssi) > 10) {
-//                                                equipoAmarillo = equipoAmarillo - 10;
-//                                            }
-//                                            if (Math.abs(rssiCarry - actualRssi) < 10) {
-//                                                equipoAmarillo = equipoAmarillo - 5;
-//                                            }
                                             equipoAmarillotv.setText("equipo amarillo = " + String.valueOf(equipoAmarillo));
                                             break;
                                         case 27802:
                                             soporteCandy.setText("rssi  soporte candy = " + actualRssi);
                                             rssiCarry = readsBc.get(52909);
                                             equipoCandy = rssiCarry + actualRssi;
-//                                            if (Math.abs(rssiCarry - actualRssi) > 10) {
-//                                                equipoCandy = equipoCandy - 10;
-//                                            }
-//                                            if (Math.abs(rssiCarry - actualRssi) < 10) {
-//                                                equipoCandy = equipoCandy - 5;
-//                                            }
                                             equipoCandytv.setText("equipo candy = " + String.valueOf(equipoCandy));
                                             break;
                                         case 25989:
                                             soporteRemolacha.setText("rssi soporte remolacha = " + actualRssi);
                                             rssiCarry = readsBc.get(1731);
                                             equipoRemolacha = rssiCarry + actualRssi;
-//                                            if (Math.abs(rssiCarry - actualRssi) > 10) {
-//                                                equipoRemolacha = equipoRemolacha - 10;
-//                                            }
-//                                            if (Math.abs(rssiCarry - actualRssi) < 10) {
-//                                                equipoRemolacha = equipoRemolacha - 5;
-//                                            }
                                             equipoRemolachatv.setText("equipo remolacha = " + String.valueOf(equipoRemolacha));
                                             break;
                                         case 13451:
                                             soporteVerde.setText("rssi soporte verde = " + actualRssi);
                                             rssiCarry = readsBc.get(4739);
                                             equipoVerde = rssiCarry + actualRssi;
-//                                            if (Math.abs(rssiCarry - actualRssi) >= 10) {
-//                                                equipoVerde = equipoVerde - 10;
-//                                            }
-//                                            if (Math.abs(rssiCarry - actualRssi) < 10) {
-//                                                equipoVerde = equipoVerde - 5;
-//                                            }
                                             equipoVerdetv.setText("equipo verde = " + String.valueOf(equipoVerde));
                                             break;
                                         case 20799:
                                             soporteAzul.setText("rssi soporte azul = " + actualRssi);
                                             rssiCarry = readsBc.get(17578);
                                             equipoAzul = rssiCarry + actualRssi-5;
-//                                            if (Math.abs(rssiCarry - actualRssi) > 10) {
-//                                                equipoAzul = equipoAzul - 10;
-//                                            }
-//                                            if (Math.abs(rssiCarry - actualRssi) < 10) {
-//                                                equipoAzul = equipoAzul - 5;
-//                                            }
                                             equipoAzultv.setText("equipo azul = " + String.valueOf(equipoAzul));
                                             break;
                                         default:
@@ -219,17 +167,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                                 if (diffLastStep>8300){
                                     linearfiltroPasos.setBackgroundColor(Color.RED);
-
                                 }
 
                                 if (diffLastStep<8300){
                                     linearfiltroPasos.setBackgroundColor(Color.WHITE);
                                 }
-
                                 if (equipoGanador!=null && !equiposMap.values().toArray()[0].toString().equals(equipoGanador)){
                                     b=true;
                                 }
-
                                 if (diffLastStep < 8300 &&  equiposMap.firstKey()>0 && equiposMap.firstKey()<=133 && b) {
                                     equipoGanador = equiposMap.values().toArray()[0].toString();
                                     toptv.setText("AND THE AMI GOES TO " + equipoGanador);
@@ -237,7 +182,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                     speaker.speak(equipoGanador.toString());
                                     speaker.allow(false);
                                     b = false;
-
 
                                 }
 
@@ -247,8 +191,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             resetearEquipos();
                             equiposMap.clear();
 
-//                        }
-//                    }, 4000);
                 }
             }
         });
@@ -279,47 +221,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         beaconsSoporte.put(13451,0);    //minor del verde2
         beaconsSoporte.put(20799,0);    //minor del celeste
 
-
-        neightborArray[0] = new Poi("equipoVerde","Entrada");
-        neightborArray[1] = new Poi("equipoRemolacha","Escaleras");
-        neightborArray[2] = new Poi("equipoAzul", "Baños");
-        neightborArray[3] = new Poi("equipoCandy","Molinetes");
-        neightborArray[4] = new Poi("equipoAmarillo","Anden");
-
-        HashMap<String,String> equipoVerdeSubMap = new HashMap<>();
-        equipoVerdeSubMap.put("Norte","Baños,primera salida a la izquierda,dos metros");
-        equipoVerdeSubMap.put("Noroeste","Molinetes,segunda salida a la derecha,cuatro metros");
-        equipoVerdeSubMap.put("Suroeste","Escaleras,primera salida a la derecha,dos metros");
-        mapLocationAudios.put("equipoVerde",equipoVerdeSubMap);
-
-        HashMap<String,String> equipoRemolachaSubMap = new HashMap<>();
-        equipoRemolachaSubMap.put("Norte","molinetes,primera salida a la derecha, dos metros");
-        equipoRemolachaSubMap.put("Sureste","Baños,siga derecho dos metros");
-        equipoRemolachaSubMap.put("Noreste","Andén,segunda salida a la izquierda,dos metros");
-        equipoRemolachaSubMap.put("Sur","Entrada, primera salida a la derecha,dos metros");
-        mapLocationAudios.put("equipoRemolacha",equipoRemolachaSubMap);
-
-        HashMap<String,String> equipoAzulSubMap = new HashMap<>();
-        equipoAzulSubMap.put("Noreste","Andén primera salida a la izquierda,dos metros");
-        equipoAzulSubMap.put("Noroeste","Molinetes,siga derecho,dos metros");
-        equipoAzulSubMap.put("Sur","Entrada,primera salida a la derecha,dos metros");
-        equipoAzulSubMap.put("Suroeste","Escaleras,primera salida a la izquierda,dos metros");
-        mapLocationAudios.put("equipoAzul",equipoAzulSubMap);
-
-        HashMap<String,String> equipoCandySubMap = new HashMap<>();
-        equipoCandySubMap.put("Noreste","Andén,sida derecho 2 metros");
-        equipoCandySubMap.put("Sureste","Baños,primera salida a la derecha,dos metros");
-        equipoCandySubMap.put("Oeste","");
-        equipoCandySubMap.put("SurOeste","Molinetes,primera salida a la izquierda,dos metros");
-        equipoCandySubMap.put("Sur","Entrada,segunda salida a la derecha,cuatro metros");
-        mapLocationAudios.put("equipoCandy",equipoCandySubMap);
-
-        HashMap<String,String> equipoAmarilloSubMap = new HashMap<>();
-        equipoAmarilloSubMap.put("Noroeste","Molinetes,primera salida a la izquierda,dos metros");
-        equipoAmarilloSubMap.put("Suroeste","Escaleras,segunda salida a la izquierda,cuatro metros");
-        equipoAmarilloSubMap.put("Sur","Para ir a los baños,primera salida a la derecha,dos metros,entrada segunda salida a la derecha,cuatro metros");
-        mapLocationAudios.put("equipoAmarillo",equipoAmarilloSubMap);
-
     }
 
     private void initViews() {
@@ -342,7 +243,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         equipoAzultv = (TextView)findViewById(R.id.equipoAzul);
 
         toptv = (TextView)findViewById(R.id.toptv);
-        actualPostv = (TextView)findViewById(R.id.actualPostv);
         azimuthtv = (TextView)findViewById(R.id.azimuthtv);
         linearfiltroPasos = (LinearLayout)findViewById(R.id.filtroPasos);
     }
@@ -452,27 +352,73 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     private void suguerirDestinos(String equipoGanador, float azimuth) {
-        String direccion = "Norte";
-        if ((azimuth >= 345 && azimuth < 360) || (azimuth >=0 && azimuth < 65)){
-            direccion = "Norte";
+
+        String sugerencia= "Entrada";
+        if (equipoGanador.equals("equipoVerde")){
+            if(azimuth >8 && azimuth<35){
+                sugerencia = "Baños,primera salida a la izquierda,dos metros,segunda salida a la izquierda andén,cuatro metros";
+            }
+            if (azimuth>40 && azimuth<60){
+                sugerencia = "Escaleras,primera salida a la deracha, dos metros, segunda salida a la derecha molinetes,cuatro metros";
+            }
         }
-        if (azimuth >= 65 && azimuth < 120){
-            direccion = "Noroeste";
+        if (equipoGanador.equals("equipoRemolacha")){
+            if(azimuth<290 || azimuth <340){
+                sugerencia = "Entrada,primera salida a la derecha, dos metros";
+            }
+            if (azimuth>350 || azimuth <7){
+                sugerencia = "Baños,primera salida a la izquierda,dos metros";
+            }
+            else if (azimuth > 8 && azimuth <20){
+                sugerencia = "Andén,segunda salida a la izquierda,cuatro metros";
+            }
+            else if (azimuth >20){
+                sugerencia = "Andén,segunda salida a la izquierda,cuatro metros";
+            }else {
+                sugerencia = "Molinetes,proxima salida a la derecha,dos metros";
+            }
         }
-        if (azimuth >= 120 && azimuth < 165){
-            direccion = "Suroeste";
-        }
-        if (azimuth >= 165 && azimuth < 255){
-            direccion = "Sur";
-        }
-        if (azimuth >= 255 & azimuth < 300){
-            direccion = "Sureste";
-        }
-        if (azimuth >= 300 & azimuth < 345){
-            direccion = "Noreste";
+        if (equipoGanador.equals("equipoAzul")){
+            if(azimuth>130 && azimuth<200){
+                sugerencia = "Entrada, primera salida a la derecha, dos metros";
+            }
+            else if(azimuth >85 && azimuth <120){
+                sugerencia = "Escaleras,primera salida a la izquierda,dos metros";
+            }
+            else if (azimuth >55 && azimuth <85){
+                sugerencia = "Molinetes,primera salida a la derecha, dos metros";
+            }
+            else {
+                sugerencia = "Andén,primera salida a la izquierda, dos metros";
+            }
         }
 
-        String sugerencia = mapLocationAudios.get(equipoGanador).get(direccion);
+        if (equipoGanador.equals("equipoCandy")){
+            if (azimuth>130 && azimuth<165){
+                sugerencia = "Escaleras,primera salida a la izquierda,dos metros";
+            }
+            else if(azimuth>165 && azimuth<215){
+                sugerencia = "Entrada, segunda salida a la derecha, cuatro metros";
+            }
+            else if (azimuth>240 && azimuth<340){
+                sugerencia = "Baños,primera salida a la derecha, dos metros";
+            }else {
+                sugerencia = "Andén,primera salida a la izquierda, dos metros";
+            }
+        }
+
+        if (equipoGanador.equals("equipoAmarillo")){
+            if (azimuth>125 && azimuth<160){
+                sugerencia = "Baños,primera salida a la derecha,dos metros,segunda salida a la derecha entrada,cuatro metros";
+            }
+            else if(azimuth>105 && azimuth<125){
+                sugerencia = "Escaleras,segunda salida a la izquierda,cuatro metros";
+            }
+            else {
+                sugerencia = "Molinetes, primera salida a la izquierda,dos metros";
+            }
+        }
+
         speaker.allow(true);
         speaker.speak(sugerencia);
 
