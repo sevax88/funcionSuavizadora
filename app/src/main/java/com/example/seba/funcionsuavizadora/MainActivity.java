@@ -2,6 +2,7 @@ package com.example.seba.funcionsuavizadora;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.estimote.sdk.Beacon;
@@ -71,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     int j=2;
     private boolean b=true;
     private long lastStep;
+    private LinearLayout linearfiltroPasos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -214,11 +217,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                                 long diffLastStep = System.currentTimeMillis() - lastStep;
 
+                                if (diffLastStep>8300){
+                                    linearfiltroPasos.setBackgroundColor(Color.RED);
+
+                                }
+
+                                if (diffLastStep<8300){
+                                    linearfiltroPasos.setBackgroundColor(Color.WHITE);
+                                }
+
                                 if (equipoGanador!=null && !equiposMap.values().toArray()[0].toString().equals(equipoGanador)){
                                     b=true;
                                 }
 
-                                if (diffLastStep < 5000 &&  equiposMap.firstKey()>0 && equiposMap.firstKey()<=133 && b) {
+                                if (diffLastStep < 8300 &&  equiposMap.firstKey()>0 && equiposMap.firstKey()<=133 && b) {
                                     equipoGanador = equiposMap.values().toArray()[0].toString();
                                     toptv.setText("AND THE AMI GOES TO " + equipoGanador);
                                     speaker.allow(true);
@@ -275,38 +287,37 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         neightborArray[4] = new Poi("equipoAmarillo","Anden");
 
         HashMap<String,String> equipoVerdeSubMap = new HashMap<>();
-        equipoVerdeSubMap.put("Norte","Para ir a las escaleras primera salida a la derecha,dos metros");
-        equipoVerdeSubMap.put("Este","");
-        equipoVerdeSubMap.put("Oeste","");
-        equipoVerdeSubMap.put("Sur","");
+        equipoVerdeSubMap.put("Norte","Baños,primera salida a la izquierda,dos metros");
+        equipoVerdeSubMap.put("Noroeste","Molinetes,segunda salida a la derecha,cuatro metros");
+        equipoVerdeSubMap.put("Suroeste","Escaleras,primera salida a la derecha,dos metros");
         mapLocationAudios.put("equipoVerde",equipoVerdeSubMap);
 
         HashMap<String,String> equipoRemolachaSubMap = new HashMap<>();
-        equipoRemolachaSubMap.put("Norte","Para ir a los molinetes,primera salida a la derecha, dos metros");
-        equipoRemolachaSubMap.put("Este","Para ir a los Baños,siga derecho dos metros");
-        equipoRemolachaSubMap.put("Oeste","");
-        equipoRemolachaSubMap.put("Sur","Para ir a la entrada, izquierda primera salida a la derecha");
+        equipoRemolachaSubMap.put("Norte","molinetes,primera salida a la derecha, dos metros");
+        equipoRemolachaSubMap.put("Sureste","Baños,siga derecho dos metros");
+        equipoRemolachaSubMap.put("Noreste","Andén,segunda salida a la izquierda,dos metros");
+        equipoRemolachaSubMap.put("Sur","Entrada, primera salida a la derecha,dos metros");
         mapLocationAudios.put("equipoRemolacha",equipoRemolachaSubMap);
 
         HashMap<String,String> equipoAzulSubMap = new HashMap<>();
-        equipoAzulSubMap.put("Norte","Para ir al anden primera salida a la izquierda,dos metros");
-        equipoAzulSubMap.put("Este","");
-        equipoAzulSubMap.put("Oeste","Para ir a los molinetes,siga derecho,dos metros");
-        equipoAzulSubMap.put("Sur","Para ir a la entrada,gire a la derecha,primera salida a la derecha,dos metros");
+        equipoAzulSubMap.put("Noreste","Andén primera salida a la izquierda,dos metros");
+        equipoAzulSubMap.put("Noroeste","Molinetes,siga derecho,dos metros");
+        equipoAzulSubMap.put("Sur","Entrada,primera salida a la derecha,dos metros");
+        equipoAzulSubMap.put("Suroeste","Escaleras,primera salida a la izquierda,dos metros");
         mapLocationAudios.put("equipoAzul",equipoAzulSubMap);
 
         HashMap<String,String> equipoCandySubMap = new HashMap<>();
-        equipoCandySubMap.put("Norte","");
-        equipoCandySubMap.put("Este","Para ir al anden,segui derecho,dos metros");
+        equipoCandySubMap.put("Noreste","Andén,sida derecho 2 metros");
+        equipoCandySubMap.put("Sureste","Baños,primera salida a la derecha,dos metros");
         equipoCandySubMap.put("Oeste","");
-        equipoCandySubMap.put("Sur","Para ir a los molinetes,gira a la izquierda, primera salida a la izquierda,dos metros");
+        equipoCandySubMap.put("SurOeste","Molinetes,primera salida a la izquierda,dos metros");
+        equipoCandySubMap.put("Sur","Entrada,segunda salida a la derecha,cuatro metros");
         mapLocationAudios.put("equipoCandy",equipoCandySubMap);
 
         HashMap<String,String> equipoAmarilloSubMap = new HashMap<>();
-        equipoAmarilloSubMap.put("Norte","");
-        equipoAmarilloSubMap.put("Este","");
-        equipoAmarilloSubMap.put("Oeste","Para ir a los molinetes,siga derecha,dos metros");
-        equipoAmarilloSubMap.put("Sur","Para ir a los baños,primera salida a la derecha,dos metros");
+        equipoAmarilloSubMap.put("Noroeste","Molinetes,primera salida a la izquierda,dos metros");
+        equipoAmarilloSubMap.put("Suroeste","Escaleras,segunda salida a la izquierda,cuatro metros");
+        equipoAmarilloSubMap.put("Sur","Para ir a los baños,primera salida a la derecha,dos metros,entrada segunda salida a la derecha,cuatro metros");
         mapLocationAudios.put("equipoAmarillo",equipoAmarilloSubMap);
 
     }
@@ -333,6 +344,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         toptv = (TextView)findViewById(R.id.toptv);
         actualPostv = (TextView)findViewById(R.id.actualPostv);
         azimuthtv = (TextView)findViewById(R.id.azimuthtv);
+        linearfiltroPasos = (LinearLayout)findViewById(R.id.filtroPasos);
     }
 
 
@@ -394,7 +406,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 mGravity[0] = beta * mGravity[0] + (1 - beta)* event.values[0];
                 mGravity[1] = beta * mGravity[1] + (1 - beta)* event.values[1];
                 mGravity[2] = beta * mGravity[2] + (1 - beta)* event.values[2];
-                if ((int)mGravity[2]!=9){
+                if (mGravity[2]<9.2 || mGravity[2]>10.20){
                     lastStep = System.currentTimeMillis();
                 }
 
@@ -430,7 +442,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public boolean onDoubleTap(MotionEvent e) {
-//        suguerirDestinos(equipoGanador,azimuth);
+        suguerirDestinos(equipoGanador,azimuth);
         return false;
     }
 
@@ -441,17 +453,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private void suguerirDestinos(String equipoGanador, float azimuth) {
         String direccion = "Norte";
-        if ((azimuth >= 345 && azimuth < 360) || (azimuth >=0 && azimuth < 75)){
+        if ((azimuth >= 345 && azimuth < 360) || (azimuth >=0 && azimuth < 65)){
             direccion = "Norte";
         }
-        if (azimuth >= 75 && azimuth < 165){
-            direccion = "Oeste";
+        if (azimuth >= 65 && azimuth < 120){
+            direccion = "Noroeste";
+        }
+        if (azimuth >= 120 && azimuth < 165){
+            direccion = "Suroeste";
         }
         if (azimuth >= 165 && azimuth < 255){
             direccion = "Sur";
         }
-        if (azimuth >= 255 & azimuth < 345){
-            direccion = "Este";
+        if (azimuth >= 255 & azimuth < 300){
+            direccion = "Sureste";
+        }
+        if (azimuth >= 300 & azimuth < 345){
+            direccion = "Noreste";
         }
 
         String sugerencia = mapLocationAudios.get(equipoGanador).get(direccion);
@@ -493,7 +511,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-//        this.detector.onTouchEvent(event);
+        this.detector.onTouchEvent(event);
         return super.onTouchEvent(event);
     }
 }
