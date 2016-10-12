@@ -336,6 +336,24 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public boolean onSingleTapConfirmed(MotionEvent e) {
+        String sugerenciaCompleta;
+        if (equipoGanador.equals("equipoVerde")){
+            sugerenciaCompleta = "Baños,primera salida a la izquierda,dos metros,segunda salida a la izquierda andén,cuatro metros.Escaleras,primera salida a la deracha, dos metros, segunda salida a la derecha molinetes,cuatro metros";
+        }
+        else if(equipoGanador.equals("equipoRemolacha")){
+           sugerenciaCompleta = "Hacia la izquierda,entrada,primera salida a la derecha, dos metros.Hacia la derecha,baños,primera salida a la izquierda,dos metros.Hacia la derecha,andén,segunda salida a la izquierda,cuatro metros.Hacia la derecha,molinetes,proxima salida a la derecha,dos metros";
+        }
+        else if(equipoGanador.equals("equipoAzul")){
+            sugerenciaCompleta = "Hacia la derecha,entrada, primera salida a la derecha, dos metros.Hacia la derecha,escaleras,primera salida a la izquierda,dos metros.Hacia la izquierda,molinetes,primera salida a la derecha, dos metros.Hacia la izquierda,andén,primera salida a la izquierda, dos metros";
+        }
+        else if (equipoGanador.equals("equipoCandy")){
+            sugerenciaCompleta = "Hacia la izquierda,escaleras,primera salida a la izquierda,dos metros.Hacia la izquierda,entrada, segunda salida a la derecha, cuatro metros.Hacia la izquierda,baños,primera salida a la derecha, dos metros.Hacia la derecha,andén,primera salida a la izquierda, dos metros";
+        }
+        else {
+            sugerenciaCompleta = "Baños,primera salida a la derecha,dos metros,segunda salida a la derecha entrada,cuatro metros.Molinetes, primera salida a la izquierda,dos metros.Segunda salida a la izquierda,escaleras,cuatro metros";
+        }
+        speaker.allow(true);
+        speaker.speak(sugerenciaCompleta);
         return false;
     }
 
