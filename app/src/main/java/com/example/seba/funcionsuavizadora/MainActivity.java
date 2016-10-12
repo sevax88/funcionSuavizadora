@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private float[] mGeomagnetic = new float[3];
     private Sensor gsensor;
     private Sensor msensor;
-    private HashMap<String,HashMap<String,String>> mapLocationAudios = new HashMap<>() ;
     private GestureDetector detector;
     private boolean b=true;
     private long lastStep;
@@ -355,37 +354,35 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         String sugerencia= "Entrada";
         if (equipoGanador.equals("equipoVerde")){
-            if(azimuth >8 && azimuth<35){
+            if(azimuth >0 && azimuth<35){
                 sugerencia = "Baños,primera salida a la izquierda,dos metros,segunda salida a la izquierda andén,cuatro metros";
             }
-            if (azimuth>40 && azimuth<60){
+            else {
                 sugerencia = "Escaleras,primera salida a la deracha, dos metros, segunda salida a la derecha molinetes,cuatro metros";
             }
         }
         if (equipoGanador.equals("equipoRemolacha")){
-            if(azimuth<290 || azimuth <340){
+            if(azimuth>230&& azimuth <280){
                 sugerencia = "Entrada,primera salida a la derecha, dos metros";
             }
-            if (azimuth>350 || azimuth <7){
+            else if (azimuth>280 && azimuth <320){
                 sugerencia = "Baños,primera salida a la izquierda,dos metros";
             }
-            else if (azimuth > 8 && azimuth <20){
+            else if (azimuth > 320 && azimuth <359){
                 sugerencia = "Andén,segunda salida a la izquierda,cuatro metros";
             }
-            else if (azimuth >20){
-                sugerencia = "Andén,segunda salida a la izquierda,cuatro metros";
-            }else {
+            else {
                 sugerencia = "Molinetes,proxima salida a la derecha,dos metros";
             }
         }
         if (equipoGanador.equals("equipoAzul")){
-            if(azimuth>130 && azimuth<200){
+            if(azimuth>185 && azimuth<230){
                 sugerencia = "Entrada, primera salida a la derecha, dos metros";
             }
-            else if(azimuth >85 && azimuth <120){
+            else if(azimuth >130 && azimuth <185){
                 sugerencia = "Escaleras,primera salida a la izquierda,dos metros";
             }
-            else if (azimuth >55 && azimuth <85){
+            else if (azimuth >50 && azimuth <130){
                 sugerencia = "Molinetes,primera salida a la derecha, dos metros";
             }
             else {
@@ -394,13 +391,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
 
         if (equipoGanador.equals("equipoCandy")){
-            if (azimuth>130 && azimuth<165){
+            if (azimuth>190 && azimuth<220){
                 sugerencia = "Escaleras,primera salida a la izquierda,dos metros";
             }
-            else if(azimuth>165 && azimuth<215){
+            else if(azimuth<240 && azimuth>220){
                 sugerencia = "Entrada, segunda salida a la derecha, cuatro metros";
             }
-            else if (azimuth>240 && azimuth<340){
+            else if (azimuth>245 && azimuth<285){
                 sugerencia = "Baños,primera salida a la derecha, dos metros";
             }else {
                 sugerencia = "Andén,primera salida a la izquierda, dos metros";
@@ -408,10 +405,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
 
         if (equipoGanador.equals("equipoAmarillo")){
-            if (azimuth>125 && azimuth<160){
+            if (azimuth>185 && azimuth<225){
                 sugerencia = "Baños,primera salida a la derecha,dos metros,segunda salida a la derecha entrada,cuatro metros";
             }
-            else if(azimuth>105 && azimuth<125){
+            else if(azimuth>165 && azimuth<185){
                 sugerencia = "Escaleras,segunda salida a la izquierda,cuatro metros";
             }
             else {
