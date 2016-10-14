@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private boolean b=true;
     private long lastStep;
     private LinearLayout linearfiltroPasos;
+    private HashMap<String,String> equipoLugar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,7 +179,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                     equipoGanador = equiposMap.values().toArray()[0].toString();
                                     toptv.setText("AND THE AMI GOES TO " + equipoGanador);
                                     speaker.allow(true);
-                                    speaker.speak(equipoGanador.toString());
+//                                    speaker.speak(equipoGanador.toString());
+                                    speaker.speak(equipoLugar.get(equipoGanador));
                                     speaker.allow(false);
                                     b = false;
 
@@ -219,6 +221,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         beaconsSoporte.put (25989,0);   //minor remolacha2
         beaconsSoporte.put(13451,0);    //minor del verde2
         beaconsSoporte.put(20799,0);    //minor del celeste
+
+        equipoLugar = new HashMap<>();
+        equipoLugar.put("equipoVerde","Entrada");
+        equipoLugar.put("equipoRemolacha","Escaleras");
+        equipoLugar.put("equipoAzul","Baños");
+        equipoLugar.put("equipoCandy","Molinetes");
+        equipoLugar.put("equipoAmarillo","Andén");
 
     }
 
