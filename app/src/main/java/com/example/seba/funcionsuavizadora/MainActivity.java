@@ -1,12 +1,16 @@
 package com.example.seba.funcionsuavizadora;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,6 +27,7 @@ import com.estimote.sdk.SystemRequirementsChecker;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,9 +69,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         setContentView(R.layout.activity_main);
         detector = new GestureDetector(this, this);
         detector.setOnDoubleTapListener(this);
+        detector.setIsLongpressEnabled(true);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         checkTTS();
-
+        checkBluetoothAndInet();
         initViews();
         fillMaps();
         beaconManager = new BeaconManager(this);
@@ -197,6 +203,33 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         });
 
     }
+
+    private void checkBluetoothAndInet() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        final boolean isConnected = activeNetwork.isConnectedOrConnecting();
+        if (!isConnected) {
+            speaker.allow(true);
+            speaker.speak("Necesitas acceso a internet para usar esta aplicacion");
+            finish();
+        } else {
+            SystemRequirementsChecker.check(this, new SystemRequirementsChecker.Callback() {
+                @Override
+                public void onRequirementsMissing(EnumSet<SystemRequirementsChecker.Requirement> enumSet) {
+                    if (enumSet.contains(SystemRequirementsChecker.Requirement.BLUETOOTH_DISABLED)) {
+                        BluetoothAdapter.getDefaultAdapter().enable();
+
+                    } else if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+                        speaker.allow(true);
+                        speaker.speak("Necesitas una version más nueva de bluetooth para correr esta aplicacion");
+                        finish();
+                    }
+                }
+            });
+        }
+    }
+
+
 
     private void resetearEquipos() {
         equipoAmarillo = 0;
@@ -345,24 +378,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public boolean onSingleTapConfirmed(MotionEvent e) {
-        String sugerenciaCompleta;
-        if (equipoGanador.equals("equipoVerde")){
-            sugerenciaCompleta = "Baños,primera salida a la izquierda,dos metros,segunda salida a la izquierda andén,cuatro metros.Escaleras,primera salida a la deracha, dos metros, segunda salida a la derecha molinetes,cuatro metros";
-        }
-        else if(equipoGanador.equals("equipoRemolacha")){
-           sugerenciaCompleta = "Hacia la izquierda,entrada,primera salida a la derecha, dos metros.Hacia la derecha,baños,primera salida a la izquierda,dos metros.Hacia la derecha,andén,segunda salida a la izquierda,cuatro metros.Hacia la derecha,molinetes,proxima salida a la derecha,dos metros";
-        }
-        else if(equipoGanador.equals("equipoAzul")){
-            sugerenciaCompleta = "Hacia la derecha,entrada, primera salida a la derecha, dos metros.Hacia la derecha,escaleras,primera salida a la izquierda,dos metros.Hacia la izquierda,molinetes,primera salida a la derecha, dos metros.Hacia la izquierda,andén,primera salida a la izquierda, dos metros";
-        }
-        else if (equipoGanador.equals("equipoCandy")){
-            sugerenciaCompleta = "Hacia la izquierda,escaleras,primera salida a la izquierda,dos metros.Hacia la izquierda,entrada, segunda salida a la derecha, cuatro metros.Hacia la izquierda,baños,primera salida a la derecha, dos metros.Hacia la derecha,andén,primera salida a la izquierda, dos metros";
-        }
-        else {
-            sugerenciaCompleta = "Baños,primera salida a la derecha,dos metros,segunda salida a la derecha entrada,cuatro metros.Molinetes, primera salida a la izquierda,dos metros.Segunda salida a la izquierda,escaleras,cuatro metros";
-        }
         speaker.allow(true);
-        speaker.speak(sugerenciaCompleta);
+        speaker.speak(equipoLugar.get(equipoGanador));
         return false;
     }
 
@@ -448,7 +465,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
-
     @Override
     public boolean onDown(MotionEvent e) {
         return false;
@@ -471,6 +487,24 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onLongPress(MotionEvent e) {
+        String sugerenciaCompleta;
+        if (equipoGanador.equals("equipoVerde")){
+            sugerenciaCompleta = "Baños,primera salida a la izquierda,dos metros,segunda salida a la izquierda andén,cuatro metros.Escaleras,primera salida a la deracha, dos metros, segunda salida a la derecha molinetes,cuatro metros";
+        }
+        else if(equipoGanador.equals("equipoRemolacha")){
+            sugerenciaCompleta = "Hacia la izquierda,entrada,primera salida a la derecha, dos metros.Hacia la derecha,baños,primera salida a la izquierda,dos metros.Hacia la derecha,andén,segunda salida a la izquierda,cuatro metros.Hacia la derecha,molinetes,proxima salida a la derecha,dos metros";
+        }
+        else if(equipoGanador.equals("equipoAzul")){
+            sugerenciaCompleta = "Hacia la derecha,entrada, primera salida a la derecha, dos metros.Hacia la derecha,escaleras,primera salida a la izquierda,dos metros.Hacia la izquierda,molinetes,primera salida a la derecha, dos metros.Hacia la izquierda,andén,primera salida a la izquierda, dos metros";
+        }
+        else if (equipoGanador.equals("equipoCandy")){
+            sugerenciaCompleta = "Hacia la izquierda,escaleras,primera salida a la izquierda,dos metros.Hacia la izquierda,entrada, segunda salida a la derecha, cuatro metros.Hacia la izquierda,baños,primera salida a la derecha, dos metros.Hacia la derecha,andén,primera salida a la izquierda, dos metros";
+        }
+        else {
+            sugerenciaCompleta = "Baños,primera salida a la derecha,dos metros,segunda salida a la derecha entrada,cuatro metros.Molinetes, primera salida a la izquierda,dos metros.Segunda salida a la izquierda,escaleras,cuatro metros";
+        }
+        speaker.allow(true);
+        speaker.speak(sugerenciaCompleta);
 
     }
 
