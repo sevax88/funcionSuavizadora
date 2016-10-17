@@ -305,7 +305,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 mGravity[0] = beta * mGravity[0] + (1 - beta)* event.values[0];
                 mGravity[1] = beta * mGravity[1] + (1 - beta)* event.values[1];
                 mGravity[2] = beta * mGravity[2] + (1 - beta)* event.values[2];
-                if (mGravity[2]<9.2 || mGravity[2]>10.20){
+                if (mGravity[2]>=10.00){
                     lastStep = System.currentTimeMillis();
                 }
 
