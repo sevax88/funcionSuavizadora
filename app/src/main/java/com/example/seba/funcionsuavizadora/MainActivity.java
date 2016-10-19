@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                                 long diffLastStep = System.currentTimeMillis() - lastStep;
 
-                                if (diffLastStep>4650){
+                                if (diffLastStep>4400){
                                     linearfiltroPasos.setBackgroundColor(Color.RED);
                                 }
 
@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 if (equipoGanador!=null && !equiposMap.values().toArray()[0].toString().equals(equipoGanador)){
                                     b=true;
                                 }
-                                if (diffLastStep < 4650 &&  equiposMap.firstKey()>0 && equiposMap.firstKey()<=133 && b ) {
+                                if (diffLastStep < 4400 &&  equiposMap.firstKey()>0 && equiposMap.firstKey()<=133 && b ) {
                                     equipoGanador = equiposMap.values().toArray()[0].toString();
                                     toptv.setText("AND THE AMI GOES TO " + equipoGanador);
                                     speaker.allow(true);
@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                     b = false;
                                     flagpasillo = true;
 
-                                }else if(diffLastStep < 4650 &&  equiposMap.firstKey()>0 && equiposMap.firstKey()>140 && flagpasillo){
+                                }else if(diffLastStep < 4400 &&  equiposMap.firstKey()>0 && equiposMap.firstKey()>140 && flagpasillo){
                                     equipoGanador = "Pasillo";
                                     toptv.setText("AND THE AMI GOES TO " + equipoGanador);
                                     speaker.allow(true);
