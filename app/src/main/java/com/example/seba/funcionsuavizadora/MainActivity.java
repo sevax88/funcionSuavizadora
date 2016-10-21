@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                         case 28617:
                                             soporteAmarillo.setText("rssi soporte lemon = " + actualRssi);
                                             rssiCarry = readsBc.get(28695);
-                                            equipoAmarillo = rssiCarry + actualRssi -17;
+                                            equipoAmarillo = rssiCarry + actualRssi -14;
                                             equipoAmarillotv.setText("equipo amarillo = " + String.valueOf(equipoAmarillo));
                                             break;
                                         case 27802:
