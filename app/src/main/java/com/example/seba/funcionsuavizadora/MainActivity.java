@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                                 long diffLastStep = System.currentTimeMillis() - lastStep;
 
-                                if (diffLastStep>4400){
+                                if (diffLastStep>5500){
                                     linearfiltroPasos.setBackgroundColor(Color.RED);
                                 }
 
@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 if (equipoGanador!=null && !equiposMap.values().toArray()[0].toString().equals(equipoGanador)){
                                     b=true;
                                 }
-                                if (diffLastStep < 4400 &&  equiposMap.firstKey()>0 && equiposMap.firstKey()<=133 && b ) {
+                                if (diffLastStep < 5500 &&  equiposMap.firstKey()>0 && equiposMap.firstKey()<=133 && b ) {
                                     equipoGanador = equiposMap.values().toArray()[0].toString();
                                     toptv.setText("AND THE AMI GOES TO " + equipoGanador);
                                     speaker.allow(true);
@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                     b = false;
                                     flagpasillo = true;
 
-                                }else if(diffLastStep < 4400 &&  equiposMap.firstKey()>0 && equiposMap.firstKey()>140 && flagpasillo){
+                                }else if(diffLastStep < 5500 &&  equiposMap.firstKey()>0 && equiposMap.firstKey()>140 && flagpasillo){
                                     equipoGanador = "Pasillo";
                                     toptv.setText("AND THE AMI GOES TO " + equipoGanador);
                                     speaker.allow(true);
@@ -314,7 +314,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 mGravity[0] = beta * mGravity[0] + (1 - beta)* event.values[0];
                 mGravity[1] = beta * mGravity[1] + (1 - beta)* event.values[1];
                 mGravity[2] = beta * mGravity[2] + (1 - beta)* event.values[2];
-                if (mGravity[2]>=9.9){
+                if (mGravity[2]>=9.8){
                     lastStep = System.currentTimeMillis();
                 }
 
