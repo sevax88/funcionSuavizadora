@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 Beacon beacon = list.get(i);
                                 if (readsBc.containsKey(beacon.getMinor())) {
                                     int lastRssi = readsBc.get(beacon.getMinor());
-                                    int actualRssi = beacon.getRssi() * (-1);
+                                    int actualRssi = beacon.getRssi() * (-1) ;
                                     actualRssi = (int) (alpha * actualRssi + (1 - alpha) * lastRssi);
                                     readsBc.put(beacon.getMinor(), actualRssi);
                                     switch (beacon.getMinor()) {
@@ -115,38 +115,38 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 }
                                 if (beaconsSoporte.containsKey(beacon.getMinor())) {
                                     int lastRssi = beaconsSoporte.get(beacon.getMinor());
-                                    int actualRssi = beacon.getRssi() * (-1);
+                                    int actualRssi = beacon.getRssi() * (-1)  ;
                                     actualRssi = (int) (alpha * actualRssi + (1 - alpha) * lastRssi);
                                     beaconsSoporte.put(beacon.getMinor(), actualRssi);
                                     switch (beacon.getMinor()) {
                                         case 28617:
                                             soporteAmarillo.setText("rssi soporte lemon = " + actualRssi);
                                             rssiCarry = readsBc.get(28695);
-                                            equipoAmarillo = rssiCarry + actualRssi;
+                                            equipoAmarillo = rssiCarry + actualRssi - 30;
                                             equipoAmarillotv.setText("equipo amarillo = " + String.valueOf(equipoAmarillo));
                                             break;
                                         case 27802:
                                             soporteCandy.setText("rssi  soporte candy = " + actualRssi);
                                             rssiCarry = readsBc.get(52909);
-                                            equipoCandy = rssiCarry + actualRssi;
+                                            equipoCandy = rssiCarry + actualRssi -30;
                                             equipoCandytv.setText("equipo candy = " + String.valueOf(equipoCandy));
                                             break;
                                         case 25989:
                                             soporteRemolacha.setText("rssi soporte remolacha = " + actualRssi);
                                             rssiCarry = readsBc.get(1731);
-                                            equipoRemolacha = rssiCarry + actualRssi;
+                                            equipoRemolacha = rssiCarry + actualRssi - 25;
                                             equipoRemolachatv.setText("equipo remolacha = " + String.valueOf(equipoRemolacha));
                                             break;
                                         case 13451:
                                             soporteVerde.setText("rssi soporte verde = " + actualRssi);
                                             rssiCarry = readsBc.get(4739);
-                                            equipoVerde = rssiCarry + actualRssi;
+                                            equipoVerde = rssiCarry + actualRssi -30;
                                             equipoVerdetv.setText("equipo verde = " + String.valueOf(equipoVerde));
                                             break;
                                         case 20799:
                                             soporteAzul.setText("rssi soporte azul = " + actualRssi);
                                             rssiCarry = readsBc.get(17578);
-                                            equipoAzul = rssiCarry + actualRssi-5;
+                                            equipoAzul = rssiCarry + actualRssi -30;
                                             equipoAzultv.setText("equipo azul = " + String.valueOf(equipoAzul));
                                             break;
                                         default:
@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                                 long diffLastStep = System.currentTimeMillis() - lastStep;
 
-                                if (diffLastStep>4400){
+                                if (diffLastStep>6500){
                                     linearfiltroPasos.setBackgroundColor(Color.RED);
                                 }
 
@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 if (equipoGanador!=null && !equiposMap.values().toArray()[0].toString().equals(equipoGanador)){
                                     b=true;
                                 }
-                                if (diffLastStep < 4400 &&  equiposMap.firstKey()>0 && equiposMap.firstKey()<=133 && b ) {
+                                if (diffLastStep < 6500 &&  equiposMap.firstKey()>0 && equiposMap.firstKey()<=130 && b ) {
                                     equipoGanador = equiposMap.values().toArray()[0].toString();
                                     toptv.setText("AND THE AMI GOES TO " + equipoGanador);
                                     speaker.allow(true);
@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                     b = false;
                                     flagpasillo = true;
 
-                                }else if(diffLastStep < 4400 &&  equiposMap.firstKey()>0 && equiposMap.firstKey()>140 && flagpasillo){
+                                }else if(diffLastStep < 6500 &&  equiposMap.firstKey()>0 && equiposMap.firstKey()>140 && flagpasillo){
                                     equipoGanador = "Pasillo";
                                     toptv.setText("AND THE AMI GOES TO " + equipoGanador);
                                     speaker.allow(true);
@@ -314,7 +314,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 mGravity[0] = beta * mGravity[0] + (1 - beta)* event.values[0];
                 mGravity[1] = beta * mGravity[1] + (1 - beta)* event.values[1];
                 mGravity[2] = beta * mGravity[2] + (1 - beta)* event.values[2];
-                if (mGravity[2]>=9.9){
+                if (mGravity[2]>=9.6){
                     lastStep = System.currentTimeMillis();
                 }
 
