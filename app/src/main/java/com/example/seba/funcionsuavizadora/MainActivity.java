@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Region region;
     private int listenerCount = 0;
     private Map<Integer,Integer> readsBc,beaconsSoporte;
-    private double alpha = 0.3;
+    private double alpha = 0.35;
     private TextView soporteAmarillo,soporteCandy,soporteRemolacha,equipoAmarillotv,equipoCandytv,equipoRemolachatv,equipoVerdetv,soporteVerde,soporteAzul,equipoAzultv;
     private Integer rssiCarry;
     private int equipoAmarillo,equipoCandy,equipoRemolacha,equipoVerde,equipoAzul;
@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                         case 20799:
                                             soporteAzul.setText("rssi soporte azul = " + actualRssi);
                                             rssiCarry = readsBc.get(17578);
-                                            equipoAzul = rssiCarry + actualRssi-5;
+                                            equipoAzul = rssiCarry + actualRssi-7;
                                             equipoAzultv.setText("equipo azul = " + String.valueOf(equipoAzul));
                                             break;
                                         default:
