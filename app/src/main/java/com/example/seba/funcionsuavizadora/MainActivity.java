@@ -221,7 +221,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                     } else if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
                         speaker.allow(true);
-                        speaker.speak("Necesitas una version más nueva de bluetooth para correr esta aplicacion");
+                        speaker.speak("Necesitas una version más nueva de bluetooth para utilizar esta aplicacion");
                         finish();
                     }
                 }
