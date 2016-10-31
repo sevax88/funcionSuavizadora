@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Region region;
     private int listenerCount = 0;
     private Map<Integer,Integer> readsBc,beaconsSoporte;
-    private double alpha = 0.35;
+    private double alpha = 0.8;
     private TextView soporteAmarillo,soporteCandy,soporteRemolacha,equipoAmarillotv,equipoCandytv,equipoRemolachatv,equipoVerdetv,soporteVerde,soporteAzul,equipoAzultv;
     private Integer rssiCarry;
     private int equipoAmarillo,equipoCandy,equipoRemolacha,equipoVerde,equipoAzul;
@@ -79,9 +79,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm:ss");
                 Date resultdate = new Date(yourmilliseconds);
                 Log.v("onBeaconDiscover", "se descubrio un beacon - tiempo: " + sdf.format(resultdate) + " list size =" + list.size());
-                if (list.size()==10){
+//                if (list.size()==9){
                   firstTime=true;
-                }
+//                }
                 if (firstTime && list.size()>0) {
                     Log.v("entrada al listener", String.valueOf(listenerCount));
                             for (int i = 0; i < list.size(); i++) {
@@ -102,11 +102,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                         case 1731:
                                             rssiBeacon3.setText("rssi remolacha1 - 1731 = " + actualRssi);
                                             break;
-                                        case 4739:
+                                        case 61868:
                                             rssiBeacon4.setText("rssi verde1 - 4739 = " + actualRssi);
                                             break;
-                                        case 17578:
+                                        case 15063:
                                             rssiBeacon5.setText("rssi azul - 17578 = " + actualRssi);
+                                            equipoAzul = actualRssi +72;
+                                            equipoAzultv.setText("equipo azul = " + String.valueOf(equipoAzul));
                                             break;
                                         default:
                                             break;
@@ -137,18 +139,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                             equipoRemolacha = rssiCarry + actualRssi;
                                             equipoRemolachatv.setText("equipo remolacha = " + String.valueOf(equipoRemolacha));
                                             break;
-                                        case 13451:
+                                        case 49846:
                                             soporteVerde.setText("rssi soporte verde = " + actualRssi);
-                                            rssiCarry = readsBc.get(4739);
+                                            rssiCarry = readsBc.get(61868);
                                             equipoVerde = rssiCarry + actualRssi;
                                             equipoVerdetv.setText("equipo verde = " + String.valueOf(equipoVerde));
                                             break;
-                                        case 20799:
-                                            soporteAzul.setText("rssi soporte azul = " + actualRssi);
-                                            rssiCarry = readsBc.get(17578);
-                                            equipoAzul = rssiCarry + actualRssi-7;
-                                            equipoAzultv.setText("equipo azul = " + String.valueOf(equipoAzul));
-                                            break;
+//                                        case 20799:
+//                                            soporteAzul.setText("rssi soporte azul = " + actualRssi);
+//                                            rssiCarry = readsBc.get(15063);
+//                                            equipoAzul = rssiCarry + actualRssi-7;
+//                                            equipoAzultv.setText("equipo azul = " + String.valueOf(equipoAzul));
+//                                            break;
                                         default:
                                             break;
                                     }
@@ -220,14 +222,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         readsBc.put(28695, 0);          //minor del lemon1
         readsBc.put(1731, 0);           //minor del remolacha1
         readsBc.put (52909,0);          //minor candy1
-        readsBc.put (4739,0);           //minor verde1
-        readsBc.put(17578,0);           //minor del azul
+        readsBc.put (61868,0);           //minor celeeste grande
+        readsBc.put(15063,0);           //minor del azul
 
         beaconsSoporte.put(28617,0);    //minor del lemon2
         beaconsSoporte.put (27802,0);   //minor candy2
         beaconsSoporte.put (25989,0);   //minor remolacha2
-        beaconsSoporte.put(13451,0);    //minor del verde2
-        beaconsSoporte.put(20799,0);    //minor del celeste
+        beaconsSoporte.put(49846,0);    //minor del verdegrande
+//        beaconsSoporte.put(20799,0);    //minor del celeste
 
     }
 
