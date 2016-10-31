@@ -347,24 +347,24 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public boolean onSingleTapConfirmed(MotionEvent e) {
-        String sugerenciaCompleta;
-        if (!equipoGanador.equals("Pasillo")) {
-            if (equipoGanador.equals("equipoVerde")) {
-                sugerenciaCompleta = "Baños,primera salida a la izquierda,dos metros,segunda salida a la izquierda andén,cuatro metros.Escaleras,primera salida a la deracha, dos metros, segunda salida a la derecha molinetes,cuatro metros";
-            } else if (equipoGanador.equals("equipoRemolacha")) {
-                sugerenciaCompleta = "Hacia la izquierda,entrada,primera salida a la derecha, dos metros.Hacia la derecha,baños,primera salida a la izquierda,dos metros.Hacia la derecha,andén,segunda salida a la izquierda,cuatro metros.Hacia la derecha,molinetes,proxima salida a la derecha,dos metros";
-            } else if (equipoGanador.equals("equipoAzul")) {
-                sugerenciaCompleta = "Hacia la derecha,entrada, primera salida a la derecha, dos metros.Hacia la derecha,escaleras,primera salida a la izquierda,dos metros.Hacia la izquierda,molinetes,primera salida a la derecha, dos metros.Hacia la izquierda,andén,primera salida a la izquierda, dos metros";
-            } else if (equipoGanador.equals("equipoCandy")) {
-                sugerenciaCompleta = "Hacia la izquierda,escaleras,primera salida a la izquierda,dos metros.Hacia la izquierda,entrada, segunda salida a la derecha, cuatro metros.Hacia la izquierda,baños,primera salida a la derecha, dos metros.Hacia la derecha,andén,primera salida a la izquierda, dos metros";
-            } else {
-                sugerenciaCompleta = "Baños,primera salida a la derecha,dos metros,segunda salida a la derecha entrada,cuatro metros.Molinetes, primera salida a la izquierda,dos metros.Segunda salida a la izquierda,escaleras,cuatro metros";
-            }
-            speaker.allow(true);
-            speaker.speak(sugerenciaCompleta);
-        }else {
-
-        }
+//        String sugerenciaCompleta;
+//        if (!equipoGanador.equals("Pasillo")) {
+//            if (equipoGanador.equals("equipoVerde")) {
+//                sugerenciaCompleta = "Baños,primera salida a la izquierda,dos metros,segunda salida a la izquierda andén,cuatro metros.Escaleras,primera salida a la deracha, dos metros, segunda salida a la derecha molinetes,cuatro metros";
+//            } else if (equipoGanador.equals("equipoRemolacha")) {
+//                sugerenciaCompleta = "Hacia la izquierda,entrada,primera salida a la derecha, dos metros.Hacia la derecha,baños,primera salida a la izquierda,dos metros.Hacia la derecha,andén,segunda salida a la izquierda,cuatro metros.Hacia la derecha,molinetes,proxima salida a la derecha,dos metros";
+//            } else if (equipoGanador.equals("equipoAzul")) {
+//                sugerenciaCompleta = "Hacia la derecha,entrada, primera salida a la derecha, dos metros.Hacia la derecha,escaleras,primera salida a la izquierda,dos metros.Hacia la izquierda,molinetes,primera salida a la derecha, dos metros.Hacia la izquierda,andén,primera salida a la izquierda, dos metros";
+//            } else if (equipoGanador.equals("equipoCandy")) {
+//                sugerenciaCompleta = "Hacia la izquierda,escaleras,primera salida a la izquierda,dos metros.Hacia la izquierda,entrada, segunda salida a la derecha, cuatro metros.Hacia la izquierda,baños,primera salida a la derecha, dos metros.Hacia la derecha,andén,primera salida a la izquierda, dos metros";
+//            } else {
+//                sugerenciaCompleta = "Baños,primera salida a la derecha,dos metros,segunda salida a la derecha entrada,cuatro metros.Molinetes, primera salida a la izquierda,dos metros.Segunda salida a la izquierda,escaleras,cuatro metros";
+//            }
+//            speaker.allow(true);
+//            speaker.speak(sugerenciaCompleta);
+//        }else {
+//
+//        }
         return false;
     }
 
@@ -439,11 +439,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             speaker.speak(sugerencia);
         }else{
             speaker.allow(true);
-            if (azimuth>0 && azimuth <60){
-                speaker.speak("Estas en el pasillo,llendo hacia el andén");
-            }else{
-                speaker.speak("Estas en el pasillo,llendo hacia la entrada");
+            if (azimuth>300 && azimuth <360 && equiposMap.get(0).equals("equipoAmarillo")){
+                speaker.speak("Estás en el pasillo,hacia la izquierda está el andén a dos metros");
+            }else if(azimuth>295 && azimuth<340){
+                if(equipoAzul>equipoAmarillo){
+                    speaker.speak("Estás en el pasillo, baños hacia la izquierda a un metro");
+                }else {
+                    speaker.speak("Estás en el pasillo, andén hacia la izquierda a un metro");
+                }
+            }else if(azimuth>80 && azimuth<115){
+                if (equipoCandy>equipoRemolacha){
+                    speaker.speak("Estás en el pasillo,a la derecha a un metro están los molinetes");
+                }else{
+                    speaker.speak("Estás en el pasillo, a la derecha a un metro están las escaleras");
+                }
 
+            }else if(azimuth>200 && azimuth<250 && equipoRemolacha>equipoAmarillo){
+                speaker.speak("Estás en el pasillo, hacia la izquierda la entrada a un metro");
             }
         }
     }
@@ -471,6 +483,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onLongPress(MotionEvent e) {
+        String sugerenciaCompleta;
+        if (!equipoGanador.equals("Pasillo")) {
+            if (equipoGanador.equals("equipoVerde")) {
+                sugerenciaCompleta = "Baños y andén a la izquierda.Escaleras y molinetes a la derecha";
+            } else if (equipoGanador.equals("equipoRemolacha")) {
+                sugerenciaCompleta = "Hacia la izquierda la entrada.Hacia la dereche baños,molinetes y andén";
+            } else if (equipoGanador.equals("equipoAzul")) {
+                sugerenciaCompleta = "Hacia la derecha escaleras y entrada. Hacia la izquierda molinetes,y andén";
+            } else if (equipoGanador.equals("equipoCandy")) {
+                sugerenciaCompleta = "Hacia la derecha andén.Hacia la izquierda baños,escaleras y entrada";
+            } else {
+                sugerenciaCompleta = "Hacia la derecha molinetes,baños,escaleras y entrada";
+            speaker.allow(true);
+            speaker.speak(sugerenciaCompleta);
+        }
+            //esta en el pasillo
+        }
 
     }
 
