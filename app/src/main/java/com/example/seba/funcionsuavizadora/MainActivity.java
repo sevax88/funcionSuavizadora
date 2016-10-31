@@ -1,12 +1,16 @@
 package com.example.seba.funcionsuavizadora;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,6 +27,7 @@ import com.estimote.sdk.SystemRequirementsChecker;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         detector.setOnDoubleTapListener(this);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         checkTTS();
-
+        checkBluetoothAndInet();
         initViews();
         fillMaps();
         beaconManager = new BeaconManager(this);
@@ -513,4 +518,31 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         this.detector.onTouchEvent(event);
         return super.onTouchEvent(event);
     }
+
+
+    private void checkBluetoothAndInet() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        final boolean isConnected = activeNetwork.isConnectedOrConnecting();
+        if (!isConnected) {
+            speaker.allow(true);
+            speaker.speak("Necesitas acceso a internet para usar esta aplicacion");
+            finish();
+        } else {
+            SystemRequirementsChecker.check(this, new SystemRequirementsChecker.Callback() {
+                @Override
+                public void onRequirementsMissing(EnumSet<SystemRequirementsChecker.Requirement> enumSet) {
+                    if (enumSet.contains(SystemRequirementsChecker.Requirement.BLUETOOTH_DISABLED)) {
+                        BluetoothAdapter.getDefaultAdapter().enable();
+
+                    } else if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+                        speaker.allow(true);
+                        speaker.speak("Necesitas una version más nueva de bluetooth para utilizar esta aplicacion");
+                        finish();
+                    }
+                }
+            });
+        }
+    }
+
 }
