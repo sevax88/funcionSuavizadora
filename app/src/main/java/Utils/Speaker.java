@@ -1,8 +1,13 @@
 package Utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.speech.tts.TextToSpeech;
+import android.support.v7.app.AppCompatActivity;
+
+import com.example.seba.funcionsuavizadora.MainActivity;
+import com.example.seba.funcionsuavizadora.SplashActivity;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -12,14 +17,27 @@ import java.util.Locale;
  */
 public class Speaker implements TextToSpeech.OnInitListener {
 
+    private static Speaker instance;
+    private static  Context context;
     private TextToSpeech tts;
+    private static SplashActivity msplashActivity;
 
     private boolean ready = false;
 
     private boolean allowed = false;
 
-    public Speaker(Context context){
-        tts = new TextToSpeech(context, this);
+    public static Speaker getInstance(Context contexto, SplashActivity splashActivity){
+        if (instance == null) {
+            context = contexto;
+            instance = new Speaker();
+            msplashActivity = splashActivity;
+            return instance;
+        }
+        else return instance;
+    }
+
+    public Speaker (){
+        tts = new TextToSpeech(context,this);
     }
 
     public boolean isAllowed(){
@@ -38,6 +56,9 @@ public class Speaker implements TextToSpeech.OnInitListener {
 //            tts.setLanguage(Locale.ENGLISH);
             tts.setLanguage(new Locale("spa","ESP"));
             ready = true;
+            Intent intent = new Intent(context,MainActivity.class);
+            msplashActivity.startActivity(intent);
+            msplashActivity.finish();
         }else{
             ready = false;
         }
@@ -62,5 +83,6 @@ public class Speaker implements TextToSpeech.OnInitListener {
     public void destroy(){
         tts.shutdown();
     }
+
 
 }

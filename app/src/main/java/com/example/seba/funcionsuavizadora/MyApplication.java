@@ -14,6 +14,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
         //  App ID & App Token can be taken from App section of Estimote Cloud.
 //        EstimoteSDK.initialize(getApplicationContext(), "com-example-seba-funcionsu-7kw", "bd21e09a23281f9817b176c24713bdea");
 // Optional, debug logging.

@@ -11,6 +11,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,8 +25,10 @@ import com.estimote.sdk.Beacon;
 import com.estimote.sdk.BeaconManager;
 import com.estimote.sdk.Region;
 import com.estimote.sdk.SystemRequirementsChecker;
+import com.estimote.sdk.repackaged.okhttp_v2_2_0.com.squareup.okhttp.internal.spdy.FrameReader;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -47,8 +50,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Integer rssiCarry;
     private int equipoAmarillo,equipoCandy,equipoRemolacha,equipoVerde,equipoAzul;
     private String equipoGanador;
-    private TreeMap<Integer, String> equiposMap;
-    private final int CHECK_CODE = 0x1;
     private Speaker speaker;
     private SensorManager mSensorManager;
     private boolean firstTime = false;
@@ -62,6 +63,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private long lastStep;
     private LinearLayout linearfiltroPasos;
     private boolean flagpasillo=true;
+    TreeMap<Integer,String> equiposMap = new TreeMap<Integer, String>();
+    List<String> equiposOrdenados = new ArrayList<>();
+    private String sugerenciaCompleta;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         detector = new GestureDetector(this, this);
         detector.setOnDoubleTapListener(this);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        checkTTS();
+        speaker = Speaker.getInstance(getApplicationContext(),null);
         checkBluetoothAndInet();
         initViews();
         fillMaps();
@@ -80,6 +84,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         beaconManager.setRangingListener(new BeaconManager.RangingListener() {
             @Override
             public void onBeaconsDiscovered(Region region, final List<Beacon> list) {
+                resetearEquipos();
+                equiposMap.clear();
                 long yourmilliseconds = System.currentTimeMillis();
                 SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm:ss");
                 Date resultdate = new Date(yourmilliseconds);
@@ -161,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                     }
                                 }
                             }
-                            equiposMap = new TreeMap<Integer, String>();
+//                            equiposMap = new TreeMap<Integer, String>();
                             equiposMap.put(equipoRemolacha, "equipoRemolacha");
                             equiposMap.put(equipoCandy, "equipoCandy");
                             equiposMap.put(equipoAmarillo, "equipoAmarillo");
@@ -203,8 +209,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             } catch (Exception e) {
 
                             }
-                            resetearEquipos();
-                            equiposMap.clear();
+//                            resetearEquipos();
+//                            equiposMap.clear();
 
                 }
             }
@@ -293,24 +299,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
          super.onStart();
     }
 
-    private void checkTTS(){
-        Intent check = new Intent();
-        check.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-        startActivityForResult(check, CHECK_CODE);
-    }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CHECK_CODE) {
-            if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
-                speaker = new Speaker(this);
-            } else {
-                Intent install = new Intent();
-                install.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
-                startActivity(install);
-            }
-        }
-    }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -385,7 +374,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     private void suguerirDestinos(String equipoGanador, float azimuth) {
-
+        speaker.allow(true);
         if (!equipoGanador.equals("Pasillo")) {
             String sugerencia = "Entrada";
             if (equipoGanador.equals("equipoVerde")) {
@@ -439,31 +428,39 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     sugerencia = "Molinetes, primera salida a la izquierda,dos metros";
                 }
             }
-
-            speaker.allow(true);
             speaker.speak(sugerencia);
-        }else{
-            speaker.allow(true);
-            if (azimuth>300 && azimuth <360 && equiposMap.get(0).equals("equipoAmarillo")){
+        } else {
+            //en el pasillo yendo hacia el norte
+            equiposOrdenados.addAll(equiposMap.values());
+            if (((azimuth > 340&& azimuth < 360)||azimuth<20)  &&(equiposOrdenados.get(0).equals("equipoAmarillo") || equiposOrdenados.get(1).equals("equipoAmarillo"))) {
                 speaker.speak("Estás en el pasillo,hacia la izquierda está el andén a dos metros");
-            }else if(azimuth>295 && azimuth<340){
-                if(equipoAzul>equipoAmarillo){
-                    speaker.speak("Estás en el pasillo, baños hacia la izquierda a un metro");
-                }else {
-                    speaker.speak("Estás en el pasillo, andén hacia la izquierda a un metro");
-                }
-            }else if(azimuth>80 && azimuth<115){
-                if (equipoCandy>equipoRemolacha){
-                    speaker.speak("Estás en el pasillo,a la derecha a un metro están los molinetes");
-                }else{
-                    speaker.speak("Estás en el pasillo, a la derecha a un metro están las escaleras");
-                }
-
-            }else if(azimuth>200 && azimuth<250 && equipoRemolacha>equipoAmarillo){
-                speaker.speak("Estás en el pasillo, hacia la izquierda la entrada a un metro");
+            } else if (azimuth > 295 && azimuth < 340 && equipoAzul < equipoAmarillo && equipoCandy<equipoRemolacha) {
+                speaker.speak("Estás en el pasillo, baños hacia la izquierda a un metro");
+            } else if (azimuth > 50 && azimuth < 100 && equipoAzul>155) {
+                    if (equipoCandy < equipoRemolacha ) {
+                        speaker.speak("Estás en el pasillo,a la derecha a un metro están los molinetes");
+                    } else {
+                        speaker.speak("Estás en el pasillo, a la derecha a un metro están las escaleras");
+                    }
             }
+            //en el pasillo yendo hacia el sur
+            else if (azimuth > 300 && azimuth < 350 && equipoCandy>equipoRemolacha && equipoAzul<equipoAmarillo) {
+                speaker.speak("Estás en el pasillo, hacia la derecha los baños a un metro");
+            }
+            else if(azimuth>50 && azimuth<100){
+                if (equipoCandy<equipoRemolacha){
+                    speaker.speak("Estás en el pasillo, los molinetes están a la izquierda, a un metro");
+                }else {
+                    speaker.speak("Estás en el pasillo, las escaleras están a la izquierda, a un metro");
+                }
+            }
+            else if(equipoVerde<143){
+                speaker.speak("Estás en el pasillo, la entrada está hacia la derecha a un metro");
+            }
+            equiposOrdenados.clear();
         }
     }
+
 
 
     @Override
@@ -488,7 +485,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onLongPress(MotionEvent e) {
-        String sugerenciaCompleta;
         if (!equipoGanador.equals("Pasillo")) {
             if (equipoGanador.equals("equipoVerde")) {
                 sugerenciaCompleta = "Baños y andén a la izquierda.Escaleras y molinetes a la derecha";
@@ -500,13 +496,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 sugerenciaCompleta = "Hacia la derecha andén.Hacia la izquierda baños,escaleras y entrada";
             } else {
                 sugerenciaCompleta = "Hacia la derecha molinetes,baños,escaleras y entrada";
+            }
             speaker.allow(true);
             speaker.speak(sugerenciaCompleta);
         }
             //esta en el pasillo
         }
 
-    }
+    
 
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
@@ -533,12 +530,30 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 @Override
                 public void onRequirementsMissing(EnumSet<SystemRequirementsChecker.Requirement> enumSet) {
                     if (enumSet.contains(SystemRequirementsChecker.Requirement.BLUETOOTH_DISABLED)) {
-                        BluetoothAdapter.getDefaultAdapter().enable();
+                        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                        if (bluetoothAdapter!=null){
+                            bluetoothAdapter.enable();
+                        }else {
+                            speaker.allow(true);
+                            speaker.speak("Necesitas bluetooth para utilizar esta aplicación");
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    finish();
+                                }
+                            },4000);
+
+                        }
 
                     } else if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
                         speaker.allow(true);
                         speaker.speak("Necesitas una version más nueva de bluetooth para utilizar esta aplicacion");
-                        finish();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                finish();
+                            }
+                        },4000);
                     }
                 }
             });
