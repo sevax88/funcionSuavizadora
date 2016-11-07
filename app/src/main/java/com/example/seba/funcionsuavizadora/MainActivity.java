@@ -165,11 +165,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                     }
                                 }
                             }
-                            equiposMap.put(equipoRemolacha, "equipoRemolacha");
-                            equiposMap.put(equipoCandy, "equipoCandy");
-                            equiposMap.put(equipoAmarillo, "equipoAmarillo");
-                            equiposMap.put(equipoVerde, "equipoVerde");
-                            equiposMap.put(equipoAzul, "equipoAzul");
+                            equiposMap.put(equipoRemolacha, "Escaleras");
+                            equiposMap.put(equipoCandy, "Molinetes");
+                            equiposMap.put(equipoAmarillo, "Andén");
+                            equiposMap.put(equipoVerde, "Entrada");
+                            equiposMap.put(equipoAzul, "Baños");
                             Log.v("primero",equiposMap.firstKey().toString());
                             try {
 
@@ -372,14 +372,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         speaker.allow(true);
         if (!equipoGanador.equals("Pasillo")) {
             String sugerencia = "Entrada";
-            if (equipoGanador.equals("equipoVerde")) {
+            if (equipoGanador.equals("Entrada")) {
                 if (azimuth > 0 && azimuth < 35) {
                     sugerencia = "Baños,primera salida a la izquierda,dos metros,segunda salida a la izquierda andén,cuatro metros";
                 } else {
                     sugerencia = "Escaleras,primera salida a la deracha, dos metros, segunda salida a la derecha molinetes,cuatro metros";
                 }
             }
-            if (equipoGanador.equals("equipoRemolacha")) {
+            if (equipoGanador.equals("Escaleras")) {
                 if (azimuth > 230 && azimuth < 280) {
                     sugerencia = "Entrada,primera salida a la derecha, dos metros";
                 } else if (azimuth > 280 && azimuth < 320) {
@@ -390,7 +390,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     sugerencia = "Molinetes,proxima salida a la derecha,dos metros";
                 }
             }
-            if (equipoGanador.equals("equipoAzul")) {
+            if (equipoGanador.equals("Baños")) {
                 if (azimuth > 185 && azimuth < 230) {
                     sugerencia = "Entrada, primera salida a la derecha, dos metros";
                 } else if (azimuth > 130 && azimuth < 185) {
@@ -402,7 +402,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 }
             }
 
-            if (equipoGanador.equals("equipoCandy")) {
+            if (equipoGanador.equals("Molinetes")) {
                 if (azimuth > 190 && azimuth < 220) {
                     sugerencia = "Escaleras,primera salida a la izquierda,dos metros";
                 } else if (azimuth < 240 && azimuth > 220) {
@@ -414,7 +414,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 }
             }
 
-            if (equipoGanador.equals("equipoAmarillo")) {
+            if (equipoGanador.equals("Andén")) {
                 if (azimuth > 185 && azimuth < 225) {
                     sugerencia = "Baños,primera salida a la derecha,dos metros,segunda salida a la derecha entrada,cuatro metros";
                 } else if (azimuth > 165 && azimuth < 185) {
@@ -427,7 +427,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         } else {
             //en el pasillo yendo hacia el norte
             equiposOrdenados.addAll(equiposMap.values());
-            if (((azimuth > 340&& azimuth < 360)||azimuth<20)  &&(equiposOrdenados.get(0).equals("equipoAmarillo") || equiposOrdenados.get(1).equals("equipoAmarillo"))) {
+            if (((azimuth > 340&& azimuth < 360)||azimuth<20)  &&(equiposOrdenados.get(0).equals("Andén") || equiposOrdenados.get(1).equals("Andén"))) {
                 speaker.speak("Estás en el pasillo,hacia la izquierda está el andén a dos metros");
             } else if (azimuth > 295 && azimuth < 340 && equipoAzul < equipoAmarillo && equipoCandy<equipoRemolacha) {
                 speaker.speak("Estás en el pasillo, baños hacia la izquierda a un metro");
