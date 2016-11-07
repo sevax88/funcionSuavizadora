@@ -425,29 +425,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
             speaker.speak(sugerencia);
         } else {
-            //en el pasillo yendo hacia el norte
             equiposOrdenados.addAll(equiposMap.values());
-            if (((azimuth > 340&& azimuth < 360)||azimuth<20)  &&(equiposOrdenados.get(0).equals("Andén") || equiposOrdenados.get(1).equals("Andén"))) {
-                speaker.speak("Estás en el pasillo,hacia la izquierda está el andén a dos metros");
-            } else if (azimuth > 295 && azimuth < 340 && equipoAzul < equipoAmarillo && equipoCandy<equipoRemolacha) {
-                speaker.speak("Estás en el pasillo, baños hacia la izquierda a un metro");
-            } else if (azimuth > 50 && azimuth < 100 && equipoAzul>155) {
+            if ((azimuth>0 && azimuth<20)  &&(equiposOrdenados.get(0).equals("Andén") || equiposOrdenados.get(1).equals("Andén"))) {
+                speaker.speak("Estás en el pasillo, andén a un metro y medio");
+            } else if (azimuth > 295 && azimuth < 360 ) {
+                speaker.speak("Estás en el pasillo, baños  a un metro");
+            } else if (azimuth > 50 && azimuth < 100 ) {
                     if (equipoCandy < equipoRemolacha ) {
-                        speaker.speak("Estás en el pasillo,a la derecha a un metro están los molinetes");
+                        speaker.speak("Estás en el pasillo,a un metro están los molinetes");
                     } else {
-                        speaker.speak("Estás en el pasillo, a la derecha a un metro están las escaleras");
+                        speaker.speak("Estás en el pasillo, a un metro están las escaleras");
                     }
-            }
-            //en el pasillo yendo hacia el sur
-            else if (azimuth > 300 && azimuth < 350 && equipoCandy>equipoRemolacha && equipoAzul<equipoAmarillo) {
-                speaker.speak("Estás en el pasillo, hacia la derecha los baños a un metro");
-            }
-            else if(azimuth>50 && azimuth<100){
-                if (equipoCandy<equipoRemolacha){
-                    speaker.speak("Estás en el pasillo, los molinetes están a la izquierda, a un metro");
-                }else {
-                    speaker.speak("Estás en el pasillo, las escaleras están a la izquierda, a un metro");
-                }
             }
             else if(equipoVerde<143){
                 speaker.speak("Estás en el pasillo, la entrada está hacia la derecha a un metro");
@@ -480,9 +468,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onLongPress(MotionEvent e) {
+        speaker.allow(true);
         if (!equipoGanador.equals("Pasillo")) {
-            if (equipoGanador.equals("equipoVerde")) {
-                sugerenciaCompleta = "Baños y andén a la izquierda.Escaleras y molinetes a la derecha";
+            if (equipoGanador.equals("Entrada")) {
+                sugerenciaCompleta = "Hacia la izquierda, escaleras,baños, molinetes y andén";
             } else if (equipoGanador.equals("equipoRemolacha")) {
                 sugerenciaCompleta = "Hacia la izquierda la entrada.Hacia la dereche baños,molinetes y andén";
             } else if (equipoGanador.equals("equipoAzul")) {
@@ -492,11 +481,27 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             } else {
                 sugerenciaCompleta = "Hacia la derecha molinetes,baños,escaleras y entrada";
             }
-            speaker.allow(true);
             speaker.speak(sugerenciaCompleta);
         }
-            //esta en el pasillo
+        //en el pasillo yendo hacia el norte
+        else{
+            equiposOrdenados.addAll(equiposMap.values());
+            if (azimuth>0 && azimuth<60  &&(equiposOrdenados.get(0).equals("Andén") || equiposOrdenados.get(1).equals("Andén"))) {
+                speaker.speak("Estás en el pasillo, hacia adelante andén,hacia atras molinetes,baños,escaleras y entrada");
+            } else if (azimuth > 0 && azimuth < 60 && equiposOrdenados.get(0).equals("Baños")) {
+                speaker.speak("Estás en el pasillo, hacia delante baños,molinetes y andén,hacia atras escaleras y entrada");
+            } else if (azimuth > 0 && azimuth < 60 && equiposOrdenados.get(0).equals("Escaleras")) {
+                speaker.speak("Estás en el pasillo, hacia delante escaleras,baños,molinetes y andén,hacia atras entrada");
+            }else if(azimuth>120 && azimuth<250 &&(equiposOrdenados.get(0).equals("Andén") || equiposOrdenados.get(1).equals("Andén") )){
+                speaker.speak("Estás en el pasillo, hacia adelante molinetes,baños,escaleras y entrada,hacia atras andén");
+            }else if(azimuth>120 && azimuth<250 && equiposOrdenados.get(0).equals("Baños")){
+                speaker.speak("Estás en el pasillo, hacia delante baños,escaleras y entrada,hacia atras molinetes y andén");
+            }else if(azimuth>120 && azimuth<250 &&equiposOrdenados.get(0).equals("Escaleras") ){
+                speaker.speak("Estás en el pasillo, hacia delante entrada,hacia atras escaleras,baños,molinetes y andén");
+            }
+            equiposOrdenados.clear();
         }
+    }
 
 
 
