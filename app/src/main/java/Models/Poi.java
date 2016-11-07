@@ -1,31 +1,62 @@
 package Models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by Sebas on 03/10/2016.
  */
-public class Poi {
+public class Poi implements Parcelable {
+    @SerializedName("minor")
+    private int minor;
+    @SerializedName("message")
+    private String message;
 
-    private String nombreEquipo;
-    private String audio;
-
-    public String getNombreEquipo() {
-        return nombreEquipo;
+    public int getMinor() {
+        return minor;
     }
 
-    public void setNombreEquipo(String nombreEquipo) {
-        this.nombreEquipo = nombreEquipo;
+    public void setMinor(int minor) {
+        this.minor = minor;
     }
 
-    public String getAudio() {
-        return audio;
+    public String getMessage() {
+        return message;
     }
 
-    public void setAudio(String audio) {
-        this.audio = audio;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
-    public Poi(String nombreEquipo, String audio) {
-        this.nombreEquipo = nombreEquipo;
-        this.audio = audio;
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.minor);
+        dest.writeString(this.message);
+    }
+
+    public Poi() {
+    }
+
+    protected Poi(Parcel in) {
+        this.minor = in.readInt();
+        this.message = in.readString();
+    }
+
+    public static final Parcelable.Creator<Poi> CREATOR = new Parcelable.Creator<Poi>() {
+        public Poi createFromParcel(Parcel source) {
+            return new Poi(source);
+        }
+
+        public Poi[] newArray(int size) {
+            return new Poi[size];
+        }
+    };
 }

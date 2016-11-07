@@ -7,23 +7,37 @@ import android.os.PersistableBundle;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
+
+import java.util.ArrayList;
+
+import Models.Poi;
+import Utils.GsonRequest;
 import Utils.Speaker;
 
 /**
  * Created by Sebas on 01/11/2016.
  */
 
-public class SplashActivity extends Activity {
+public class SplashActivity extends Activity implements Response.ErrorListener, Response.Listener<Poi[]> {
 
     private final int CHECK_CODE = 0x1;
     private Speaker speaker;
+    private String URL = "http://private-848b5-iguide.apiary-mock.com/minors";
+    public static String POIS = "POIS";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         checkTTS();
+    }
 
+    private void checkStation() {
+        GsonRequest gsonRequest = new GsonRequest<>(URL, Poi[].class , null, this, this);
+        Volley.newRequestQueue(this).add(gsonRequest);
     }
 
     private void checkTTS(){
@@ -45,4 +59,22 @@ public class SplashActivity extends Activity {
         }
     }
 
+    @Override
+    public void onErrorResponse(VolleyError error) {
+
+    }
+
+    @Override
+    public void onResponse(Poi[] response) {
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArray(POIS,response);
+        Intent intent = new Intent(this,MainActivity.class);
+        intent.putExtras(bundle);
+        startActivity(intent);
+        finish();
+    }
+
+    public void launchMain() {
+        checkStation();
+    }
 }

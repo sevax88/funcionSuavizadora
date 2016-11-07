@@ -56,9 +56,10 @@ public class Speaker implements TextToSpeech.OnInitListener {
 //            tts.setLanguage(Locale.ENGLISH);
             tts.setLanguage(new Locale("spa","ESP"));
             ready = true;
-            Intent intent = new Intent(context,MainActivity.class);
-            msplashActivity.startActivity(intent);
-            msplashActivity.finish();
+            msplashActivity.launchMain();
+//            Intent intent = new Intent(context,MainActivity.class);
+//            msplashActivity.startActivity(intent);
+//            msplashActivity.finish();
         }else{
             ready = false;
         }

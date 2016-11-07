@@ -12,6 +12,7 @@ import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -36,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import Models.Poi;
 import Utils.Speaker;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener,GestureDetector.OnGestureListener,GestureDetector.OnDoubleTapListener {
@@ -66,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     TreeMap<Integer,String> equiposMap = new TreeMap<Integer, String>();
     List<String> equiposOrdenados = new ArrayList<>();
     private String sugerenciaCompleta;
+    private int fuertaEstacion=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,15 +87,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         beaconManager.setRangingListener(new BeaconManager.RangingListener() {
             @Override
             public void onBeaconsDiscovered(Region region, final List<Beacon> list) {
+                if(list.size()==0){
+                    fuertaEstacion++;
+                }
                 resetearEquipos();
                 equiposMap.clear();
                 long yourmilliseconds = System.currentTimeMillis();
                 SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm:ss");
                 Date resultdate = new Date(yourmilliseconds);
                 Log.v("onBeaconDiscover", "se descubrio un beacon - tiempo: " + sdf.format(resultdate) + " list size =" + list.size());
-//                if (list.size()==9){
-                  firstTime=true;
-//                }
+                firstTime=true;
                 if (firstTime && list.size()>0) {
                     Log.v("entrada al listener", String.valueOf(listenerCount));
                             for (int i = 0; i < list.size(); i++) {
@@ -113,13 +117,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                         case 1731:
                                             rssiBeacon3.setText("rssi remolacha1 - 1731 = " + actualRssi);
                                             break;
-//                                        case 61868:
-//                                            rssiBeacon4.setText("rssi verde1 - 4739 = " + actualRssi);
-//                                            break;
                                         case 15063:
                                             rssiBeacon5.setText("rssi azul - 17578 = " + actualRssi);
-//                                            equipoAzul = actualRssi +72;
-//                                            equipoAzultv.setText("equipo azul = " + String.valueOf(equipoAzul));
                                             break;
                                         default:
                                             break;
@@ -152,7 +151,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                             break;
                                         case 49846:
                                             soporteVerde.setText("rssi soporte verde = " + actualRssi);
-//                                            rssiCarry = readsBc.get(61868);
                                             equipoVerde = 80 + actualRssi;
                                             equipoVerdetv.setText("equipo verde = " + String.valueOf(equipoVerde));
                                             break;
@@ -167,7 +165,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                     }
                                 }
                             }
-//                            equiposMap = new TreeMap<Integer, String>();
                             equiposMap.put(equipoRemolacha, "equipoRemolacha");
                             equiposMap.put(equipoCandy, "equipoCandy");
                             equiposMap.put(equipoAmarillo, "equipoAmarillo");
@@ -209,8 +206,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             } catch (Exception e) {
 
                             }
-//                            resetearEquipos();
-//                            equiposMap.clear();
+
+                }
+                if(fuertaEstacion>25){
+                    fuertaEstacion=0;
+                    speaker.allow(true);
+                    speaker.speak("No estás en ninguna estacion de subte");
                 }
             }
         });
@@ -226,20 +227,33 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     private void fillMaps() {
+
+        Parcelable[] pois  = getIntent().getExtras().getParcelableArray(SplashActivity.POIS);
         readsBc = new HashMap<>();
         beaconsSoporte = new HashMap<>();
 
-        readsBc.put(28695, 0);          //minor del lemon1
-        readsBc.put(1731, 0);           //minor del remolacha1
-        readsBc.put (52909,0);          //minor candy1
-        beaconsSoporte.put (61868,0);           //minor celeeste grande
-        readsBc.put(15063,0);           //minor del azulgrande
+        readsBc.put(((Poi)pois[7]).getMinor(), 0);          //minor del lemon1
+        readsBc.put(((Poi)pois[3]).getMinor(), 0);           //minor del remolacha1
+        readsBc.put (((Poi)pois[5]).getMinor(),0);          //minor candy1
+        beaconsSoporte.put (((Poi)pois[2]).getMinor(),0);   //minor celeeste grande
+        readsBc.put(((Poi)pois[1]).getMinor(),0);           //minor del azulgrande
 
-        beaconsSoporte.put(28617,0);    //minor del lemon2
-        beaconsSoporte.put (27802,0);   //minor candy2
-        beaconsSoporte.put (25989,0);   //minor remolacha2
-        beaconsSoporte.put(49846,0);    //minor del verdegrande
-//        beaconsSoporte.put(20799,0);    //minor del celeste
+        beaconsSoporte.put(((Poi)pois[8]).getMinor(),0);    //minor del lemon2
+        beaconsSoporte.put (((Poi)pois[6]).getMinor(),0);   //minor candy2
+        beaconsSoporte.put (((Poi)pois[4]).getMinor(),0);   //minor remolacha2
+        beaconsSoporte.put(((Poi)pois[0]).getMinor(),0);    //minor del verdegrande
+
+
+//        readsBc.put(28695, 0);          //minor del lemon1
+//        readsBc.put(1731, 0);           //minor del remolacha1
+//        readsBc.put (52909,0);          //minor candy1
+//        beaconsSoporte.put (61868,0);   //minor celeeste grande
+//        readsBc.put(15063,0);           //minor del azulgrande
+//
+//        beaconsSoporte.put(28617,0);    //minor del lemon2
+//        beaconsSoporte.put (27802,0);   //minor candy2
+//        beaconsSoporte.put (25989,0);   //minor remolacha2
+//        beaconsSoporte.put(49846,0);    //minor del verdegrande
 
     }
 
