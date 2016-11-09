@@ -14,6 +14,7 @@ import com.android.volley.toolbox.Volley;
 import java.util.ArrayList;
 
 import Models.Poi;
+import Models.ServiceResponse;
 import Utils.GsonRequest;
 import Utils.Speaker;
 
@@ -21,22 +22,22 @@ import Utils.Speaker;
  * Created by Sebas on 01/11/2016.
  */
 
-public class SplashActivity extends Activity implements Response.ErrorListener, Response.Listener<Poi[]> {
+public class SplashActivity extends Activity implements Response.ErrorListener, Response.Listener<ServiceResponse> {
 
     private final int CHECK_CODE = 0x1;
-    private Speaker speaker;
-    private String URL = "http://private-848b5-iguide.apiary-mock.com/minors";
+    private String URL_BASE = "http://private-848b5-iguide.apiary-mock.com/";
     public static String POIS = "POIS";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
         checkTTS();
     }
 
     private void checkStation() {
-        GsonRequest gsonRequest = new GsonRequest<>(URL, Poi[].class , null, this, this);
+        GsonRequest gsonRequest = new GsonRequest<>(URL_BASE + "minors", ServiceResponse.class , null, this, this);
         Volley.newRequestQueue(this).add(gsonRequest);
     }
 
@@ -65,9 +66,9 @@ public class SplashActivity extends Activity implements Response.ErrorListener, 
     }
 
     @Override
-    public void onResponse(Poi[] response) {
+    public void onResponse(ServiceResponse response) {
         Bundle bundle = new Bundle();
-        bundle.putParcelableArray(POIS,response);
+        bundle.putParcelable(POIS,response);
         Intent intent = new Intent(this,MainActivity.class);
         intent.putExtras(bundle);
         startActivity(intent);

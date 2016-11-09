@@ -2,9 +2,7 @@ package com.example.seba.funcionsuavizadora;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -13,42 +11,35 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.Parcelable;
-import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.estimote.sdk.Beacon;
 import com.estimote.sdk.BeaconManager;
 import com.estimote.sdk.Region;
 import com.estimote.sdk.SystemRequirementsChecker;
-import com.estimote.sdk.repackaged.okhttp_v2_2_0.com.squareup.okhttp.internal.spdy.FrameReader;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import Models.Audio;
 import Models.Poi;
+import Models.ServiceResponse;
 import Utils.Speaker;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener,GestureDetector.OnGestureListener,GestureDetector.OnDoubleTapListener {
 
-    private TextView rssiBeacon1,rssiBeacon2,rssiBeacon3,rssiBeacon4,rssiBeacon5,toptv,azimuthtv;
     private BeaconManager beaconManager;
     private Region region;
-    private int listenerCount = 0;
     private Map<Integer,Integer> readsBc,beaconsSoporte;
     private double alpha = 0.8;
-    private TextView soporteAmarillo,soporteCandy,soporteRemolacha,equipoAmarillotv,equipoCandytv,equipoRemolachatv,equipoVerdetv,soporteVerde,soporteAzul,equipoAzultv;
     private Integer rssiCarry;
     private int equipoAmarillo,equipoCandy,equipoRemolacha,equipoVerde,equipoAzul;
     private String equipoGanador;
@@ -63,12 +54,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private GestureDetector detector;
     private boolean b=true;
     private long lastStep;
-    private LinearLayout linearfiltroPasos;
     private boolean flagpasillo=true;
     TreeMap<Integer,String> equiposMap = new TreeMap<Integer, String>();
     List<String> equiposOrdenados = new ArrayList<>();
     private String sugerenciaCompleta;
-    private int fuertaEstacion=0;
+    private int fueraEstacion =0;
+    private Poi[] pois;
+    private Audio[] audios;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         speaker = Speaker.getInstance(getApplicationContext(),null);
         checkBluetoothAndInet();
         initViews();
-        fillMaps();
+        fillMapsAndGetIntet();
         beaconManager = new BeaconManager(this);
         beaconManager.setForegroundScanPeriod(300,0);
         region = new Region("ranged region", null, null, null);
@@ -88,128 +81,86 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             @Override
             public void onBeaconsDiscovered(Region region, final List<Beacon> list) {
                 if(list.size()==0){
-                    fuertaEstacion++;
+                    fueraEstacion++;
                 }
                 resetearEquipos();
                 equiposMap.clear();
-                long yourmilliseconds = System.currentTimeMillis();
-                SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm:ss");
-                Date resultdate = new Date(yourmilliseconds);
-                Log.v("onBeaconDiscover", "se descubrio un beacon - tiempo: " + sdf.format(resultdate) + " list size =" + list.size());
                 firstTime=true;
                 if (firstTime && list.size()>0) {
-                    Log.v("entrada al listener", String.valueOf(listenerCount));
-                            for (int i = 0; i < list.size(); i++) {
-                                speaker.allow(false);
-                                Beacon beacon = list.get(i);
-                                if (readsBc.containsKey(beacon.getMinor())) {
-                                    int lastRssi = readsBc.get(beacon.getMinor());
-                                    int actualRssi = beacon.getRssi() * (-1);
-                                    actualRssi = (int) (alpha * actualRssi + (1 - alpha) * lastRssi);
-                                    readsBc.put(beacon.getMinor(), actualRssi);
-                                    switch (beacon.getMinor()) {
-                                        case 28695:
-                                            rssiBeacon1.setText("rssi lemon1 - 28695 = " + actualRssi);
-                                            break;
-                                        case 52909:
-                                            rssiBeacon2.setText("rssi candi1 - 52909 = " + actualRssi);
-                                            break;
-                                        case 1731:
-                                            rssiBeacon3.setText("rssi remolacha1 - 1731 = " + actualRssi);
-                                            break;
-                                        case 15063:
-                                            rssiBeacon5.setText("rssi azul - 17578 = " + actualRssi);
-                                            break;
-                                        default:
-                                            break;
-                                    }
+                    for (int i = 0; i < list.size(); i++) {
+                        speaker.allow(false);
+                        Beacon beacon = list.get(i);
+                        if (readsBc.containsKey(beacon.getMinor())) {
+                            int lastRssi = readsBc.get(beacon.getMinor());
+                            int actualRssi = beacon.getRssi() * (-1);
+                            actualRssi = (int) (alpha * actualRssi + (1 - alpha) * lastRssi);
+                            readsBc.put(beacon.getMinor(), actualRssi);
 
-                                }
-                                if (beaconsSoporte.containsKey(beacon.getMinor())) {
-                                    int lastRssi = beaconsSoporte.get(beacon.getMinor());
-                                    int actualRssi = beacon.getRssi() * (-1);
-                                    actualRssi = (int) (alpha * actualRssi + (1 - alpha) * lastRssi);
-                                    beaconsSoporte.put(beacon.getMinor(), actualRssi);
-                                    switch (beacon.getMinor()) {
-                                        case 28617:
-                                            soporteAmarillo.setText("rssi soporte lemon = " + actualRssi);
-                                            rssiCarry = readsBc.get(28695);
-                                            equipoAmarillo = rssiCarry + actualRssi;
-                                            equipoAmarillotv.setText("equipo amarillo = " + String.valueOf(equipoAmarillo));
-                                            break;
-                                        case 27802:
-                                            soporteCandy.setText("rssi  soporte candy = " + actualRssi);
-                                            rssiCarry = readsBc.get(52909);
-                                            equipoCandy = rssiCarry + actualRssi;
-                                            equipoCandytv.setText("equipo candy = " + String.valueOf(equipoCandy));
-                                            break;
-                                        case 25989:
-                                            soporteRemolacha.setText("rssi soporte remolacha = " + actualRssi);
-                                            rssiCarry = readsBc.get(1731);
-                                            equipoRemolacha = rssiCarry + actualRssi;
-                                            equipoRemolachatv.setText("equipo remolacha = " + String.valueOf(equipoRemolacha));
-                                            break;
-                                        case 49846:
-                                            soporteVerde.setText("rssi soporte verde = " + actualRssi);
-                                            equipoVerde = 80 + actualRssi;
-                                            equipoVerdetv.setText("equipo verde = " + String.valueOf(equipoVerde));
-                                            break;
-                                        case 61868:
-                                            soporteAzul.setText("rssi soporte azul = " + actualRssi);
-                                            rssiCarry = readsBc.get(15063);
-                                            equipoAzul = rssiCarry + actualRssi-7;
-                                            equipoAzultv.setText("equipo azul = " + String.valueOf(equipoAzul));
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                }
+                        }
+                        if (beaconsSoporte.containsKey(beacon.getMinor())) {
+                            int lastRssi = beaconsSoporte.get(beacon.getMinor());
+                            int actualRssi = beacon.getRssi() * (-1);
+                            actualRssi = (int) (alpha * actualRssi + (1 - alpha) * lastRssi);
+                            beaconsSoporte.put(beacon.getMinor(), actualRssi);
+                            switch (beacon.getMinor()) {
+                                case 28617:
+                                    rssiCarry = readsBc.get(28695);
+                                    equipoAmarillo = rssiCarry + actualRssi;
+                                    break;
+                                case 27802:
+                                    rssiCarry = readsBc.get(52909);
+                                    equipoCandy = rssiCarry + actualRssi;
+                                    break;
+                                case 25989:
+                                    rssiCarry = readsBc.get(1731);
+                                    equipoRemolacha = rssiCarry + actualRssi;
+                                    break;
+                                case 49846:
+                                    equipoVerde = 80 + actualRssi;
+                                    break;
+                                case 61868:
+                                    rssiCarry = readsBc.get(15063);
+                                    equipoAzul = rssiCarry + actualRssi-7;
+                                    break;
+                                default:
+                                    break;
                             }
-                            equiposMap.put(equipoRemolacha, "Escaleras");
-                            equiposMap.put(equipoCandy, "Molinetes");
-                            equiposMap.put(equipoAmarillo, "Andén");
-                            equiposMap.put(equipoVerde, "Entrada");
-                            equiposMap.put(equipoAzul, "Baños");
-                            Log.v("primero",equiposMap.firstKey().toString());
-                            try {
+                        }
+                    }
+                    equiposMap.put(equipoRemolacha, "Escaleras");
+                    equiposMap.put(equipoCandy, "Molinetes");
+                    equiposMap.put(equipoAmarillo, "Andén");
+                    equiposMap.put(equipoVerde, "Entrada");
+                    equiposMap.put(equipoAzul, "Baños");
+                    Log.v("primero",equiposMap.firstKey().toString());
+                    try {
 
-                                long diffLastStep = System.currentTimeMillis() - lastStep;
+                        long diffLastStep = System.currentTimeMillis() - lastStep;
+                        if (equipoGanador!=null && !equiposMap.values().toArray()[0].toString().equals(equipoGanador)){
+                            b=true;
+                        }
+                        if (diffLastStep < 5500 &&  equiposMap.firstKey()>0 && equiposMap.firstKey()<=133 && b ) {
+                            equipoGanador = equiposMap.values().toArray()[0].toString();
+                            speaker.allow(true);
+                            speaker.speak(equipoGanador.toString());
+                            speaker.allow(false);
+                            b = false;
+                            flagpasillo = true;
 
-                                if (diffLastStep>5500){
-                                    linearfiltroPasos.setBackgroundColor(Color.RED);
-                                }
+                        }else if(diffLastStep < 5500 &&  equiposMap.firstKey()>0 && equiposMap.firstKey()>140 && flagpasillo){
+                            equipoGanador = "Pasillo";
+                            speaker.allow(true);
+                            speaker.speak(equipoGanador.toString());
+                            speaker.allow(false);
+                            flagpasillo=false;
+                        }
 
-                                else {
-                                    linearfiltroPasos.setBackgroundColor(Color.WHITE);
-                                }
-                                if (equipoGanador!=null && !equiposMap.values().toArray()[0].toString().equals(equipoGanador)){
-                                    b=true;
-                                }
-                                if (diffLastStep < 5500 &&  equiposMap.firstKey()>0 && equiposMap.firstKey()<=133 && b ) {
-                                    equipoGanador = equiposMap.values().toArray()[0].toString();
-                                    toptv.setText("AND THE AMI GOES TO " + equipoGanador);
-                                    speaker.allow(true);
-                                    speaker.speak(equipoGanador.toString());
-                                    speaker.allow(false);
-                                    b = false;
-                                    flagpasillo = true;
+                    } catch (Exception e) {
 
-                                }else if(diffLastStep < 5500 &&  equiposMap.firstKey()>0 && equiposMap.firstKey()>140 && flagpasillo){
-                                    equipoGanador = "Pasillo";
-                                    toptv.setText("AND THE AMI GOES TO " + equipoGanador);
-                                    speaker.allow(true);
-                                    speaker.speak(equipoGanador.toString());
-                                    speaker.allow(false);
-                                    flagpasillo=false;
-                                }
-
-                            } catch (Exception e) {
-
-                            }
-
+                    }
                 }
-                if(fuertaEstacion>25){
-                    fuertaEstacion=0;
+                if(fueraEstacion >25){
+                    fueraEstacion =0;
                     speaker.allow(true);
                     speaker.speak("No estás en ninguna estacion de subte");
                 }
@@ -226,9 +177,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         equipoAzul=0;
     }
 
-    private void fillMaps() {
+    private void fillMapsAndGetIntet() {
 
-        Parcelable[] pois  = getIntent().getExtras().getParcelableArray(SplashActivity.POIS);
+        Parcelable response  = getIntent().getExtras().getParcelable(SplashActivity.POIS);
+        audios = ((ServiceResponse)response).getAudios();
+        pois = ((ServiceResponse)response).getListminor();
         readsBc = new HashMap<>();
         beaconsSoporte = new HashMap<>();
 
@@ -244,41 +197,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         beaconsSoporte.put(((Poi)pois[0]).getMinor(),0);    //minor del verdegrande
 
 
-//        readsBc.put(28695, 0);          //minor del lemon1
-//        readsBc.put(1731, 0);           //minor del remolacha1
-//        readsBc.put (52909,0);          //minor candy1
-//        beaconsSoporte.put (61868,0);   //minor celeeste grande
-//        readsBc.put(15063,0);           //minor del azulgrande
-//
-//        beaconsSoporte.put(28617,0);    //minor del lemon2
-//        beaconsSoporte.put (27802,0);   //minor candy2
-//        beaconsSoporte.put (25989,0);   //minor remolacha2
-//        beaconsSoporte.put(49846,0);    //minor del verdegrande
 
     }
 
     private void initViews() {
-        rssiBeacon1 = (TextView)findViewById(R.id.rssiBeacon1);
-        rssiBeacon2 = (TextView)findViewById(R.id.rssiBeacon2);
-        rssiBeacon3 = (TextView)findViewById(R.id.rssiBeacon3);
-        rssiBeacon4 = (TextView)findViewById(R.id.rssiBeacon4);
-        rssiBeacon5 = (TextView)findViewById(R.id.rssiBeacon5);
 
-        soporteAmarillo = (TextView)findViewById(R.id.soporteAmarillo);
-        soporteCandy = (TextView)findViewById(R.id.soporteCandy);
-        soporteRemolacha = (TextView)findViewById(R.id.soporteRemolacha);
-        soporteVerde = (TextView)findViewById(R.id.soporteVerde);
-        soporteAzul = (TextView)findViewById(R.id.soporteAzul);
-
-        equipoAmarillotv = (TextView) findViewById(R.id.equipoAmarillo);
-        equipoCandytv = (TextView)findViewById(R.id.equipoCandy);
-        equipoRemolachatv = (TextView)findViewById(R.id.equipoRemolacha);
-        equipoVerdetv = (TextView)findViewById(R.id.equipoVerde);
-        equipoAzultv = (TextView)findViewById(R.id.equipoAzul);
-
-        toptv = (TextView)findViewById(R.id.toptv);
-        azimuthtv = (TextView)findViewById(R.id.azimuthtv);
-        linearfiltroPasos = (LinearLayout)findViewById(R.id.filtroPasos);
     }
 
 
@@ -309,10 +232,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     protected void onStart() {
-         super.onStart();
+        super.onStart();
     }
-
-
 
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -342,7 +263,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 SensorManager.getOrientation(Ri, orientation);
                 azimuth = (float) Math.toDegrees(orientation[0]); // orientation
                 azimuth = (azimuth + 360) % 360;
-                azimuthtv.setText(String.valueOf(azimuth));
             }
         }
     }
@@ -431,11 +351,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             } else if (azimuth > 295 && azimuth < 360 ) {
                 speaker.speak("Estás en el pasillo, baños  a un metro");
             } else if (azimuth > 50 && azimuth < 100 ) {
-                    if (equipoCandy < equipoRemolacha ) {
-                        speaker.speak("Estás en el pasillo,a un metro están los molinetes");
-                    } else {
-                        speaker.speak("Estás en el pasillo, a un metro están las escaleras");
-                    }
+                if (equipoCandy < equipoRemolacha ) {
+                    speaker.speak("Estás en el pasillo,a un metro están los molinetes");
+                } else {
+                    speaker.speak("Estás en el pasillo, a un metro están las escaleras");
+                }
             }
             else if(equipoVerde<143){
                 speaker.speak("Estás en el pasillo, la entrada está hacia la derecha a un metro");
@@ -472,27 +392,29 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (!equipoGanador.equals("Pasillo")) {
             if (equipoGanador.equals("Entrada")) {
                 sugerenciaCompleta = "Hacia la izquierda, escaleras,baños, molinetes y andén";
-            } else if (equipoGanador.equals("equipoRemolacha")) {
+            } else if (equipoGanador.equals("Escaleras")) {
                 sugerenciaCompleta = "Hacia la izquierda la entrada.Hacia la dereche baños,molinetes y andén";
-            } else if (equipoGanador.equals("equipoAzul")) {
+            } else if (equipoGanador.equals("Baños")) {
                 sugerenciaCompleta = "Hacia la derecha escaleras y entrada. Hacia la izquierda molinetes,y andén";
-            } else if (equipoGanador.equals("equipoCandy")) {
+            } else if (equipoGanador.equals("Molinetes")) {
                 sugerenciaCompleta = "Hacia la derecha andén.Hacia la izquierda baños,escaleras y entrada";
             } else {
                 sugerenciaCompleta = "Hacia la derecha molinetes,baños,escaleras y entrada";
             }
             speaker.speak(sugerenciaCompleta);
         }
-        //en el pasillo yendo hacia el norte
         else{
             equiposOrdenados.addAll(equiposMap.values());
+            //en el pasillo yendo hacia el norte
             if (azimuth>0 && azimuth<60  &&(equiposOrdenados.get(0).equals("Andén") || equiposOrdenados.get(1).equals("Andén"))) {
                 speaker.speak("Estás en el pasillo, hacia adelante andén,hacia atras molinetes,baños,escaleras y entrada");
             } else if (azimuth > 0 && azimuth < 60 && equiposOrdenados.get(0).equals("Baños")) {
                 speaker.speak("Estás en el pasillo, hacia delante baños,molinetes y andén,hacia atras escaleras y entrada");
             } else if (azimuth > 0 && azimuth < 60 && equiposOrdenados.get(0).equals("Escaleras")) {
                 speaker.speak("Estás en el pasillo, hacia delante escaleras,baños,molinetes y andén,hacia atras entrada");
-            }else if(azimuth>120 && azimuth<250 &&(equiposOrdenados.get(0).equals("Andén") || equiposOrdenados.get(1).equals("Andén") )){
+            }
+            //en el pasillo llendo hacia el sur
+            else if(azimuth>120 && azimuth<250 &&(equiposOrdenados.get(0).equals("Andén") || equiposOrdenados.get(1).equals("Andén") )){
                 speaker.speak("Estás en el pasillo, hacia adelante molinetes,baños,escaleras y entrada,hacia atras andén");
             }else if(azimuth>120 && azimuth<250 && equiposOrdenados.get(0).equals("Baños")){
                 speaker.speak("Estás en el pasillo, hacia delante baños,escaleras y entrada,hacia atras molinetes y andén");
