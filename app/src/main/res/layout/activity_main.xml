@@ -149,4 +149,5 @@
     android:layout_height="match_parent"
     android:src="@drawable/iguide_logo"
     android:padding="16dp"
+    android:background="@null"
 />

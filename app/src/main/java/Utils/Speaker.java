@@ -1,12 +1,9 @@
 package Utils;
 
 import android.content.Context;
-import android.content.Intent;
 import android.media.AudioManager;
 import android.speech.tts.TextToSpeech;
-import android.support.v7.app.AppCompatActivity;
 
-import com.example.seba.funcionsuavizadora.MainActivity;
 import com.example.seba.funcionsuavizadora.SplashActivity;
 
 import java.util.HashMap;
@@ -51,15 +48,9 @@ public class Speaker implements TextToSpeech.OnInitListener {
     @Override
     public void onInit(int status) {
         if(status == TextToSpeech.SUCCESS){
-            // Change this to match your
-            // locale
-//            tts.setLanguage(Locale.ENGLISH);
             tts.setLanguage(new Locale("spa","ESP"));
             ready = true;
-            msplashActivity.launchMain();
-//            Intent intent = new Intent(context,MainActivity.class);
-//            msplashActivity.startActivity(intent);
-//            msplashActivity.finish();
+            msplashActivity.doMoreChecksAndStartMain();
         }else{
             ready = false;
         }

@@ -1,5 +1,6 @@
 package Models;
 
+import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -11,6 +12,7 @@ public class ServiceResponse implements Parcelable {
 
     private Poi[] listminor;
     private Audio[] audios;
+//    private Integer umbralPi,umbralPasillo;
 
     public Poi[] getListminor() {
         return listminor;
@@ -28,6 +30,21 @@ public class ServiceResponse implements Parcelable {
         this.audios = audios;
     }
 
+//    public int getUmbralPi() {
+//        return umbralPi;
+//    }
+//
+//    public void setUmbralPi(int umbralPi) {
+//        this.umbralPi = umbralPi;
+//    }
+
+//    public int getUmbralPasillo() {
+//        return umbralPasillo;
+//    }
+
+//    public void setUmbralPasillo(int umbralPasillo) {
+//        this.umbralPasillo = umbralPasillo;
+//    }
 
     @Override
     public int describeContents() {
@@ -38,6 +55,8 @@ public class ServiceResponse implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelableArray(this.listminor, 0);
         dest.writeParcelableArray(this.audios, 0);
+//        dest.writeInt(this.umbralPi);
+//        dest.writeInt(this.umbralPasillo);
     }
 
     public ServiceResponse() {
@@ -46,6 +65,8 @@ public class ServiceResponse implements Parcelable {
     protected ServiceResponse(Parcel in) {
         this.listminor = (Poi[]) in.readParcelableArray(Poi.class.getClassLoader());
         this.audios = (Audio[]) in.readParcelableArray(Audio.class.getClassLoader());
+//        this.umbralPi = in.readInt();
+//        this.umbralPasillo = in.readInt();
     }
 
     public static final Parcelable.Creator<ServiceResponse> CREATOR = new Parcelable.Creator<ServiceResponse>() {

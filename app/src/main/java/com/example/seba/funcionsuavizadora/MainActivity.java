@@ -61,6 +61,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private int fueraEstacion =0;
     private Poi[] pois;
     private Audio[] audios;
+    private String sugerencia;
+    private int umbralPi;
+    private int umbralPasillo;
 
 
     @Override
@@ -71,7 +74,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         detector.setOnDoubleTapListener(this);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         speaker = Speaker.getInstance(getApplicationContext(),null);
-        checkBluetoothAndInet();
         initViews();
         fillMapsAndGetIntet();
         beaconManager = new BeaconManager(this);
@@ -139,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         if (equipoGanador!=null && !equiposMap.values().toArray()[0].toString().equals(equipoGanador)){
                             b=true;
                         }
-                        if (diffLastStep < 5500 &&  equiposMap.firstKey()>0 && equiposMap.firstKey()<=133 && b ) {
+                        if (diffLastStep < 5500 &&  equiposMap.firstKey()>0 && equiposMap.firstKey()<= umbralPi && b ) {
                             equipoGanador = equiposMap.values().toArray()[0].toString();
                             speaker.allow(true);
                             speaker.speak(equipoGanador.toString());
@@ -147,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             b = false;
                             flagpasillo = true;
 
-                        }else if(diffLastStep < 5500 &&  equiposMap.firstKey()>0 && equiposMap.firstKey()>140 && flagpasillo){
+                        }else if(diffLastStep < 5500 &&  equiposMap.firstKey()>0 && equiposMap.firstKey()> umbralPasillo && flagpasillo){
                             equipoGanador = "Pasillo";
                             speaker.allow(true);
                             speaker.speak(equipoGanador.toString());
@@ -182,28 +184,26 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Parcelable response  = getIntent().getExtras().getParcelable(SplashActivity.POIS);
         audios = ((ServiceResponse)response).getAudios();
         pois = ((ServiceResponse)response).getListminor();
+//        umbralPi = ((ServiceResponse)response).getUmbralPi();
+//        umbralPasillo = ((ServiceResponse)response).getUmbralPasillo();
         readsBc = new HashMap<>();
         beaconsSoporte = new HashMap<>();
 
-        readsBc.put(((Poi)pois[7]).getMinor(), 0);          //minor del lemon1
-        readsBc.put(((Poi)pois[3]).getMinor(), 0);           //minor del remolacha1
-        readsBc.put (((Poi)pois[5]).getMinor(),0);          //minor candy1
-        beaconsSoporte.put (((Poi)pois[2]).getMinor(),0);   //minor celeeste grande
-        readsBc.put(((Poi)pois[1]).getMinor(),0);           //minor del azulgrande
+        readsBc.put(pois[7].getMinor(), 0);          //minor del lemon1
+        readsBc.put(pois[3].getMinor(), 0);           //minor del remolacha1
+        readsBc.put (pois[5].getMinor(),0);          //minor candy1
+        beaconsSoporte.put(pois[2].getMinor(),0);   //minor celeeste grande
+        readsBc.put(pois[1].getMinor(),0);           //minor del azulgrande
 
-        beaconsSoporte.put(((Poi)pois[8]).getMinor(),0);    //minor del lemon2
-        beaconsSoporte.put (((Poi)pois[6]).getMinor(),0);   //minor candy2
-        beaconsSoporte.put (((Poi)pois[4]).getMinor(),0);   //minor remolacha2
-        beaconsSoporte.put(((Poi)pois[0]).getMinor(),0);    //minor del verdegrande
-
-
-
+        beaconsSoporte.put(pois[8].getMinor(),0);    //minor del lemon2
+        beaconsSoporte.put(pois[6].getMinor(),0);   //minor candy2
+        beaconsSoporte.put(pois[4].getMinor(),0);   //minor remolacha2
+        beaconsSoporte.put(pois[0].getMinor(),0);    //minor del verdegrande
     }
 
     private void initViews() {
 
     }
-
 
     @Override
     protected void onResume() {
@@ -290,78 +290,76 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private void suguerirDestinos(String equipoGanador, float azimuth) {
         speaker.allow(true);
+        sugerencia = "";
         if (!equipoGanador.equals("Pasillo")) {
-            String sugerencia = "Entrada";
-            if (equipoGanador.equals("Entrada")) {
+            switch (equipoGanador){
+                case "Entrada":
                 if (azimuth > 0 && azimuth < 35) {
-                    sugerencia = "Baños,primera salida a la izquierda,dos metros,segunda salida a la izquierda andén,cuatro metros";
+                    sugerencia = audios[11].getAudio();break;
                 } else {
-                    sugerencia = "Escaleras,primera salida a la deracha, dos metros, segunda salida a la derecha molinetes,cuatro metros";
+                    sugerencia = audios[12].getAudio();break;
                 }
-            }
-            if (equipoGanador.equals("Escaleras")) {
-                if (azimuth > 230 && azimuth < 280) {
-                    sugerencia = "Entrada,primera salida a la derecha, dos metros";
-                } else if (azimuth > 280 && azimuth < 320) {
-                    sugerencia = "Baños,primera salida a la izquierda,dos metros";
-                } else if (azimuth > 320 && azimuth < 359) {
-                    sugerencia = "Andén,segunda salida a la izquierda,cuatro metros";
-                } else {
-                    sugerencia = "Molinetes,proxima salida a la derecha,dos metros";
-                }
-            }
-            if (equipoGanador.equals("Baños")) {
-                if (azimuth > 185 && azimuth < 230) {
-                    sugerencia = "Entrada, primera salida a la derecha, dos metros";
-                } else if (azimuth > 130 && azimuth < 185) {
-                    sugerencia = "Escaleras,primera salida a la izquierda,dos metros";
-                } else if (azimuth > 50 && azimuth < 130) {
-                    sugerencia = "Molinetes,primera salida a la derecha, dos metros";
-                } else {
-                    sugerencia = "Andén,primera salida a la izquierda, dos metros";
-                }
-            }
 
-            if (equipoGanador.equals("Molinetes")) {
-                if (azimuth > 190 && azimuth < 220) {
-                    sugerencia = "Escaleras,primera salida a la izquierda,dos metros";
-                } else if (azimuth < 240 && azimuth > 220) {
-                    sugerencia = "Entrada, segunda salida a la derecha, cuatro metros";
-                } else if (azimuth > 245 && azimuth < 285) {
-                    sugerencia = "Baños,primera salida a la derecha, dos metros";
-                } else {
-                    sugerencia = "Andén,primera salida a la izquierda, dos metros";
+                case "Escaleras":
+                    if (azimuth > 230 && azimuth < 280) {
+                        sugerencia = audios[13].getAudio();break;
+                    } else if (azimuth > 280 && azimuth < 320) {
+                        sugerencia = audios[14].getAudio();break;
+                    } else if (azimuth > 320 && azimuth < 359) {
+                        sugerencia = audios[15].getAudio();break;
+                    } else {
+                        sugerencia = audios[16].getAudio();break;
+                    }
+                case "Baños" :
+                    if (azimuth > 185 && azimuth < 230) {
+                        sugerencia = audios[17].getAudio();break;
+                    } else if (azimuth > 130 && azimuth < 185) {
+                        sugerencia = audios[18].getAudio();break;
+                    } else if (azimuth > 50 && azimuth < 130) {
+                        sugerencia = audios[19].getAudio();break;
+                    } else {
+                        sugerencia = audios[20].getAudio();break;
+                    }
+                case "Molinetes" :
+                    if (azimuth > 190 && azimuth < 220) {
+                        sugerencia = audios[21].getAudio();break;
+                    } else if (azimuth < 240 && azimuth > 220) {
+                        sugerencia = audios[22].getAudio();break;
+                    } else if (azimuth > 245 && azimuth < 285) {
+                        sugerencia = audios[23].getAudio();break;
+                    } else {
+                        sugerencia = audios[24].getAudio();break;
                 }
-            }
 
-            if (equipoGanador.equals("Andén")) {
-                if (azimuth > 185 && azimuth < 225) {
-                    sugerencia = "Baños,primera salida a la derecha,dos metros,segunda salida a la derecha entrada,cuatro metros";
-                } else if (azimuth > 165 && azimuth < 185) {
-                    sugerencia = "Escaleras,segunda salida a la izquierda,cuatro metros";
-                } else {
-                    sugerencia = "Molinetes, primera salida a la izquierda,dos metros";
+                case "Andén":
+                    if (azimuth > 185 && azimuth < 225) {
+                        sugerencia = audios[25].getAudio();break;
+                    } else if (azimuth > 165 && azimuth < 185) {
+                        sugerencia = audios[26].getAudio();break;
+                    } else {
+                        sugerencia = audios[27].getAudio();break;
                 }
             }
-            speaker.speak(sugerencia);
-        } else {
+        }
+        else {
             equiposOrdenados.addAll(equiposMap.values());
             if ((azimuth>0 && azimuth<20)  &&(equiposOrdenados.get(0).equals("Andén") || equiposOrdenados.get(1).equals("Andén"))) {
-                speaker.speak("Estás en el pasillo, andén a un metro y medio");
+                sugerencia = audios[28].getAudio();
             } else if (azimuth > 295 && azimuth < 360 ) {
-                speaker.speak("Estás en el pasillo, baños  a un metro");
+                sugerencia = audios[29].getAudio();
             } else if (azimuth > 50 && azimuth < 100 ) {
                 if (equipoCandy < equipoRemolacha ) {
-                    speaker.speak("Estás en el pasillo,a un metro están los molinetes");
+                    sugerencia = audios[30].getAudio();
                 } else {
-                    speaker.speak("Estás en el pasillo, a un metro están las escaleras");
+                    sugerencia = audios[31].getAudio();
                 }
             }
             else if(equipoVerde<143){
-                speaker.speak("Estás en el pasillo, la entrada está hacia la derecha a un metro");
+                sugerencia = audios[32].getAudio();
             }
             equiposOrdenados.clear();
         }
+        speaker.speak(sugerencia);
     }
 
 
@@ -390,45 +388,45 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onLongPress(MotionEvent e) {
         speaker.allow(true);
         if (!equipoGanador.equals("Pasillo")) {
-            if (equipoGanador.equals("Entrada")) {
-                sugerenciaCompleta = "Hacia la izquierda, escaleras,baños, molinetes y andén";
-            } else if (equipoGanador.equals("Escaleras")) {
-                sugerenciaCompleta = "Hacia la izquierda la entrada.Hacia la dereche baños,molinetes y andén";
-            } else if (equipoGanador.equals("Baños")) {
-                sugerenciaCompleta = "Hacia la derecha escaleras y entrada. Hacia la izquierda molinetes,y andén";
-            } else if (equipoGanador.equals("Molinetes")) {
-                sugerenciaCompleta = "Hacia la derecha andén.Hacia la izquierda baños,escaleras y entrada";
-            } else {
-                sugerenciaCompleta = "Hacia la derecha molinetes,baños,escaleras y entrada";
+            switch (equipoGanador){
+                case "Entrada": sugerenciaCompleta = audios[0].getAudio(); break;
+                case "Escaleras": sugerenciaCompleta = audios[1].getAudio();break;
+                case "Baños": sugerenciaCompleta = audios[2].getAudio();break;
+                case "Molinetes":sugerenciaCompleta = audios[3].getAudio();break;
+                case "Andén": sugerenciaCompleta = audios[4].getAudio();break;
             }
-            speaker.speak(sugerenciaCompleta);
         }
         else{
             equiposOrdenados.addAll(equiposMap.values());
+            String ganadorDspPasillo = equiposOrdenados.get(0);
             //en el pasillo yendo hacia el norte
-            if (azimuth>0 && azimuth<60  &&(equiposOrdenados.get(0).equals("Andén") || equiposOrdenados.get(1).equals("Andén"))) {
-                speaker.speak("Estás en el pasillo, hacia adelante andén,hacia atras molinetes,baños,escaleras y entrada");
-            } else if (azimuth > 0 && azimuth < 60 && equiposOrdenados.get(0).equals("Baños")) {
-                speaker.speak("Estás en el pasillo, hacia delante baños,molinetes y andén,hacia atras escaleras y entrada");
-            } else if (azimuth > 0 && azimuth < 60 && equiposOrdenados.get(0).equals("Escaleras")) {
-                speaker.speak("Estás en el pasillo, hacia delante escaleras,baños,molinetes y andén,hacia atras entrada");
+            if (azimuth>0 && azimuth<60){
+                switch (ganadorDspPasillo){
+                    case "Andén": sugerenciaCompleta = audios[5].getAudio();break;
+                    case "Baños": sugerenciaCompleta = audios[6].getAudio();break;
+                    case "Escaleras": sugerenciaCompleta = audios[7].getAudio();break;
+                }
             }
-            //en el pasillo llendo hacia el sur
-            else if(azimuth>120 && azimuth<250 &&(equiposOrdenados.get(0).equals("Andén") || equiposOrdenados.get(1).equals("Andén") )){
-                speaker.speak("Estás en el pasillo, hacia adelante molinetes,baños,escaleras y entrada,hacia atras andén");
-            }else if(azimuth>120 && azimuth<250 && equiposOrdenados.get(0).equals("Baños")){
-                speaker.speak("Estás en el pasillo, hacia delante baños,escaleras y entrada,hacia atras molinetes y andén");
-            }else if(azimuth>120 && azimuth<250 &&equiposOrdenados.get(0).equals("Escaleras") ){
-                speaker.speak("Estás en el pasillo, hacia delante entrada,hacia atras escaleras,baños,molinetes y andén");
+            //en el pasillo yendo hacia el sur
+            if(azimuth>120 && azimuth<250){
+                switch (ganadorDspPasillo){
+                    case "Andén" : sugerenciaCompleta = audios[8].getAudio();break;
+                    case "Baños" : sugerenciaCompleta = audios[9].getAudio();break;
+                    case "Escaleras" : sugerenciaCompleta = audios[10].getAudio();break;
+                }
             }
             equiposOrdenados.clear();
+
         }
+        speaker.speak(sugerenciaCompleta);
     }
 
 
 
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        speaker.allow(true);
+        speaker.speak(equipoGanador);
         return false;
     }
 
@@ -439,47 +437,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
 
-    private void checkBluetoothAndInet() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        final boolean isConnected = activeNetwork.isConnectedOrConnecting();
-        if (!isConnected) {
-            speaker.allow(true);
-            speaker.speak("Necesitas acceso a internet para usar esta aplicacion");
-            finish();
-        } else {
-            SystemRequirementsChecker.check(this, new SystemRequirementsChecker.Callback() {
-                @Override
-                public void onRequirementsMissing(EnumSet<SystemRequirementsChecker.Requirement> enumSet) {
-                    if (enumSet.contains(SystemRequirementsChecker.Requirement.BLUETOOTH_DISABLED)) {
-                        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                        if (bluetoothAdapter!=null){
-                            bluetoothAdapter.enable();
-                        }else {
-                            speaker.allow(true);
-                            speaker.speak("Necesitas bluetooth para utilizar esta aplicación");
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    finish();
-                                }
-                            },4000);
 
-                        }
-
-                    } else if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-                        speaker.allow(true);
-                        speaker.speak("Necesitas una version más nueva de bluetooth para utilizar esta aplicacion");
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                finish();
-                            }
-                        },4000);
-                    }
-                }
-            });
-        }
-    }
 
 }
