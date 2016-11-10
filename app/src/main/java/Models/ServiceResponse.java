@@ -4,47 +4,49 @@ import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.List;
+
 /**
  * Created by Sebas on 08/11/2016.
  */
 
 public class ServiceResponse implements Parcelable {
 
-    private Poi[] listminor;
-    private Audio[] audios;
-//    private Integer umbralPi,umbralPasillo;
+    private List<Poi> listminor;
+    private List<Audio> audios;
+    private Integer umbralPi,umbralPasillo;
 
-    public Poi[] getListminor() {
+    public List<Poi> getListminor() {
         return listminor;
     }
 
-    public void setListminor(Poi[] listminor) {
+    public void setListminor(List<Poi> listminor) {
         this.listminor = listminor;
     }
 
-    public Audio[] getAudios() {
+    public List<Audio> getAudios() {
         return audios;
     }
 
-    public void setAudios(Audio[] audios) {
+    public void setAudios(List<Audio> audios) {
         this.audios = audios;
     }
 
-//    public int getUmbralPi() {
-//        return umbralPi;
-//    }
-//
-//    public void setUmbralPi(int umbralPi) {
-//        this.umbralPi = umbralPi;
-//    }
+    public Integer getUmbralPi() {
+        return umbralPi;
+    }
 
-//    public int getUmbralPasillo() {
-//        return umbralPasillo;
-//    }
+    public void setUmbralPi(Integer umbralPi) {
+        this.umbralPi = umbralPi;
+    }
 
-//    public void setUmbralPasillo(int umbralPasillo) {
-//        this.umbralPasillo = umbralPasillo;
-//    }
+    public Integer getUmbralPasillo() {
+        return umbralPasillo;
+    }
+
+    public void setUmbralPasillo(Integer umbralPasillo) {
+        this.umbralPasillo = umbralPasillo;
+    }
 
     @Override
     public int describeContents() {
@@ -53,20 +55,20 @@ public class ServiceResponse implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelableArray(this.listminor, 0);
-        dest.writeParcelableArray(this.audios, 0);
-//        dest.writeInt(this.umbralPi);
-//        dest.writeInt(this.umbralPasillo);
+        dest.writeTypedList(listminor);
+        dest.writeTypedList(audios);
+        dest.writeValue(this.umbralPi);
+        dest.writeValue(this.umbralPasillo);
     }
 
     public ServiceResponse() {
     }
 
     protected ServiceResponse(Parcel in) {
-        this.listminor = (Poi[]) in.readParcelableArray(Poi.class.getClassLoader());
-        this.audios = (Audio[]) in.readParcelableArray(Audio.class.getClassLoader());
-//        this.umbralPi = in.readInt();
-//        this.umbralPasillo = in.readInt();
+        this.listminor = in.createTypedArrayList(Poi.CREATOR);
+        this.audios = in.createTypedArrayList(Audio.CREATOR);
+        this.umbralPi = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.umbralPasillo = (Integer) in.readValue(Integer.class.getClassLoader());
     }
 
     public static final Parcelable.Creator<ServiceResponse> CREATOR = new Parcelable.Creator<ServiceResponse>() {

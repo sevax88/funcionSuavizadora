@@ -59,8 +59,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     List<String> equiposOrdenados = new ArrayList<>();
     private String sugerenciaCompleta;
     private int fueraEstacion =0;
-    private Poi[] pois;
-    private Audio[] audios;
+    private List<Poi> pois;
+    private List<Audio> audios;
     private String sugerencia;
     private int umbralPi;
     private int umbralPasillo;
@@ -184,21 +184,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Parcelable response  = getIntent().getExtras().getParcelable(SplashActivity.POIS);
         audios = ((ServiceResponse)response).getAudios();
         pois = ((ServiceResponse)response).getListminor();
-//        umbralPi = ((ServiceResponse)response).getUmbralPi();
-//        umbralPasillo = ((ServiceResponse)response).getUmbralPasillo();
+        umbralPi = ((ServiceResponse)response).getUmbralPi();
+        umbralPasillo = ((ServiceResponse)response).getUmbralPasillo();
         readsBc = new HashMap<>();
         beaconsSoporte = new HashMap<>();
 
-        readsBc.put(pois[7].getMinor(), 0);          //minor del lemon1
-        readsBc.put(pois[3].getMinor(), 0);           //minor del remolacha1
-        readsBc.put (pois[5].getMinor(),0);          //minor candy1
-        beaconsSoporte.put(pois[2].getMinor(),0);   //minor celeeste grande
-        readsBc.put(pois[1].getMinor(),0);           //minor del azulgrande
+        readsBc.put(pois.get(7).getMinor(), 0);          //minor del lemon1
+        readsBc.put(pois.get(3).getMinor(), 0);           //minor del remolacha1
+        readsBc.put (pois.get(5).getMinor(),0);          //minor candy1
+        beaconsSoporte.put(pois.get(2).getMinor(),0);   //minor celeeste grande
+        readsBc.put(pois.get(1).getMinor(),0);           //minor del azulgrande
 
-        beaconsSoporte.put(pois[8].getMinor(),0);    //minor del lemon2
-        beaconsSoporte.put(pois[6].getMinor(),0);   //minor candy2
-        beaconsSoporte.put(pois[4].getMinor(),0);   //minor remolacha2
-        beaconsSoporte.put(pois[0].getMinor(),0);    //minor del verdegrande
+        beaconsSoporte.put(pois.get(8).getMinor(),0);    //minor del lemon2
+        beaconsSoporte.put(pois.get(6).getMinor(),0);   //minor candy2
+        beaconsSoporte.put(pois.get(4).getMinor(),0);   //minor remolacha2
+        beaconsSoporte.put(pois.get(0).getMinor(),0);    //minor del verdegrande
     }
 
     private void initViews() {
@@ -295,67 +295,67 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             switch (equipoGanador){
                 case "Entrada":
                 if (azimuth > 0 && azimuth < 35) {
-                    sugerencia = audios[11].getAudio();break;
+                    sugerencia = audios.get(11).getAudio();break;
                 } else {
-                    sugerencia = audios[12].getAudio();break;
+                    sugerencia = audios.get(12).getAudio();break;
                 }
 
                 case "Escaleras":
                     if (azimuth > 230 && azimuth < 280) {
-                        sugerencia = audios[13].getAudio();break;
+                        sugerencia = audios.get(13).getAudio();break;
                     } else if (azimuth > 280 && azimuth < 320) {
-                        sugerencia = audios[14].getAudio();break;
+                        sugerencia = audios.get(14).getAudio();break;
                     } else if (azimuth > 320 && azimuth < 359) {
-                        sugerencia = audios[15].getAudio();break;
+                        sugerencia = audios.get(15).getAudio();break;
                     } else {
-                        sugerencia = audios[16].getAudio();break;
+                        sugerencia = audios.get(16).getAudio();break;
                     }
                 case "Baños" :
                     if (azimuth > 185 && azimuth < 230) {
-                        sugerencia = audios[17].getAudio();break;
+                        sugerencia = audios.get(17).getAudio();break;
                     } else if (azimuth > 130 && azimuth < 185) {
-                        sugerencia = audios[18].getAudio();break;
+                        sugerencia = audios.get(18).getAudio();break;
                     } else if (azimuth > 50 && azimuth < 130) {
-                        sugerencia = audios[19].getAudio();break;
+                        sugerencia = audios.get(19).getAudio();break;
                     } else {
-                        sugerencia = audios[20].getAudio();break;
+                        sugerencia = audios.get(20).getAudio();break;
                     }
                 case "Molinetes" :
                     if (azimuth > 190 && azimuth < 220) {
-                        sugerencia = audios[21].getAudio();break;
+                        sugerencia = audios.get(21).getAudio();break;
                     } else if (azimuth < 240 && azimuth > 220) {
-                        sugerencia = audios[22].getAudio();break;
+                        sugerencia = audios.get(22).getAudio();break;
                     } else if (azimuth > 245 && azimuth < 285) {
-                        sugerencia = audios[23].getAudio();break;
+                        sugerencia = audios.get(23).getAudio();break;
                     } else {
-                        sugerencia = audios[24].getAudio();break;
+                        sugerencia = audios.get(24).getAudio();break;
                 }
 
                 case "Andén":
                     if (azimuth > 185 && azimuth < 225) {
-                        sugerencia = audios[25].getAudio();break;
+                        sugerencia = audios.get(25).getAudio();break;
                     } else if (azimuth > 165 && azimuth < 185) {
-                        sugerencia = audios[26].getAudio();break;
+                        sugerencia = audios.get(26).getAudio();break;
                     } else {
-                        sugerencia = audios[27].getAudio();break;
+                        sugerencia = audios.get(27).getAudio();break;
                 }
             }
         }
         else {
             equiposOrdenados.addAll(equiposMap.values());
             if ((azimuth>0 && azimuth<20)  &&(equiposOrdenados.get(0).equals("Andén") || equiposOrdenados.get(1).equals("Andén"))) {
-                sugerencia = audios[28].getAudio();
+                sugerencia = audios.get(28).getAudio();
             } else if (azimuth > 295 && azimuth < 360 ) {
-                sugerencia = audios[29].getAudio();
+                sugerencia = audios.get(29).getAudio();
             } else if (azimuth > 50 && azimuth < 100 ) {
                 if (equipoCandy < equipoRemolacha ) {
-                    sugerencia = audios[30].getAudio();
+                    sugerencia = audios.get(30).getAudio();
                 } else {
-                    sugerencia = audios[31].getAudio();
+                    sugerencia = audios.get(31).getAudio();
                 }
             }
             else if(equipoVerde<143){
-                sugerencia = audios[32].getAudio();
+                sugerencia = audios.get(32).getAudio();
             }
             equiposOrdenados.clear();
         }
@@ -389,11 +389,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         speaker.allow(true);
         if (!equipoGanador.equals("Pasillo")) {
             switch (equipoGanador){
-                case "Entrada": sugerenciaCompleta = audios[0].getAudio(); break;
-                case "Escaleras": sugerenciaCompleta = audios[1].getAudio();break;
-                case "Baños": sugerenciaCompleta = audios[2].getAudio();break;
-                case "Molinetes":sugerenciaCompleta = audios[3].getAudio();break;
-                case "Andén": sugerenciaCompleta = audios[4].getAudio();break;
+                case "Entrada": sugerenciaCompleta = audios.get(0).getAudio(); break;
+                case "Escaleras": sugerenciaCompleta = audios.get(1).getAudio();break;
+                case "Baños": sugerenciaCompleta = audios.get(2).getAudio();break;
+                case "Molinetes":sugerenciaCompleta = audios.get(3).getAudio();break;
+                case "Andén": sugerenciaCompleta = audios.get(4).getAudio();break;
             }
         }
         else{
@@ -402,17 +402,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             //en el pasillo yendo hacia el norte
             if (azimuth>0 && azimuth<60){
                 switch (ganadorDspPasillo){
-                    case "Andén": sugerenciaCompleta = audios[5].getAudio();break;
-                    case "Baños": sugerenciaCompleta = audios[6].getAudio();break;
-                    case "Escaleras": sugerenciaCompleta = audios[7].getAudio();break;
+                    case "Andén": sugerenciaCompleta = audios.get(5).getAudio();break;
+                    //molinetes idem anden
+                    case "Molinetes": sugerenciaCompleta = audios.get(5).getAudio();break;
+                    case "Baños": sugerenciaCompleta = audios.get(6).getAudio();break;
+                    case "Escaleras": sugerenciaCompleta = audios.get(7).getAudio();break;
+                    case "Entrada" : sugerenciaCompleta = "Hacia adelante escaleras,baños,molinetes y andén"; break;
                 }
             }
             //en el pasillo yendo hacia el sur
             if(azimuth>120 && azimuth<250){
                 switch (ganadorDspPasillo){
-                    case "Andén" : sugerenciaCompleta = audios[8].getAudio();break;
-                    case "Baños" : sugerenciaCompleta = audios[9].getAudio();break;
-                    case "Escaleras" : sugerenciaCompleta = audios[10].getAudio();break;
+                    case "Andén" : sugerenciaCompleta = audios.get(8).getAudio();break;
+                    case "Molinetes" : sugerenciaCompleta = audios.get(8).getAudio();break;
+                    case "Baños" : sugerenciaCompleta = audios.get(9).getAudio();break;
+                    case "Escaleras" : sugerenciaCompleta = audios.get(10).getAudio();break;
+                    case "Entrada" : sugerenciaCompleta = "Hacia atrás escaleras,baños,molinetes y andén"; break;
+
                 }
             }
             equiposOrdenados.clear();
