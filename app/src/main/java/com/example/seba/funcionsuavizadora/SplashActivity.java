@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -34,12 +36,16 @@ public class SplashActivity extends Activity implements Response.ErrorListener, 
     public static String POIS = "POIS";
     private Speaker speaker;
     private boolean returnValue;
+    private ImageView image;
+    private ProgressBar progressBar;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        image = (ImageView)findViewById(R.id.image);
+        progressBar = (ProgressBar)findViewById(R.id.progressBar);
         checkTTS();
     }
 

@@ -16,6 +16,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.estimote.sdk.Beacon;
 import com.estimote.sdk.BeaconManager;
@@ -64,6 +67,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private String sugerencia;
     private int umbralPi;
     private int umbralPasillo;
+    private ImageView image;
+    private ProgressBar progressBar;
 
 
     @Override
@@ -202,7 +207,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     private void initViews() {
-
+        image = (ImageView)findViewById(R.id.image);
+        progressBar = (ProgressBar)findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.GONE);
+        image.setVisibility(View.VISIBLE);
     }
 
     @Override
