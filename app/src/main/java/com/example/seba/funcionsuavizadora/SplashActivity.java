@@ -13,6 +13,7 @@ import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -88,12 +89,17 @@ public class SplashActivity extends Activity implements Response.ErrorListener, 
         returnValue = true;
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        final boolean isConnected = activeNetwork.isConnectedOrConnecting();
-        if (!isConnected) {
+//        final boolean isConnected = activeNetwork.isConnectedOrConnecting();
+        if (activeNetwork ==null || !activeNetwork.isConnectedOrConnecting()) {
             speaker.allow(true);
             speaker.speak("Necesitas acceso a internet para usar esta aplicacion");
             returnValue = false;
-            finish();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    finish();
+                }
+            },4000);
         } else {
             SystemRequirementsChecker.check(this, new SystemRequirementsChecker.Callback() {
                 @Override
@@ -114,7 +120,7 @@ public class SplashActivity extends Activity implements Response.ErrorListener, 
                             returnValue =false;
                         }
 
-                    } else if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+                    } if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
                         speaker.allow(true);
                         speaker.speak("Necesitas una version más nueva de bluetooth para utilizar esta aplicacion");
                         new Handler().postDelayed(new Runnable() {
@@ -143,4 +149,7 @@ public class SplashActivity extends Activity implements Response.ErrorListener, 
         startActivityForResult(check, CHECK_CODE);
     }
 
+    public void needToInstallTTs() {
+        Toast.makeText(this,"Need to install tts first",Toast.LENGTH_SHORT).show();
+    }
 }

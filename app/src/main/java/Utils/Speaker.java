@@ -53,6 +53,7 @@ public class Speaker implements TextToSpeech.OnInitListener {
             msplashActivity.doMoreChecksAndStartMain();
         }else{
             ready = false;
+            msplashActivity.needToInstallTTs();
         }
     }
 

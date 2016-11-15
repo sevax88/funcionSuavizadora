@@ -351,18 +351,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
         else {
             equiposOrdenados.addAll(equiposMap.values());
-            if ((azimuth>0 && azimuth<20)  &&(equiposOrdenados.get(0).equals("Andén") || equiposOrdenados.get(1).equals("Andén"))) {
+            if (((azimuth>0 && azimuth<20) || (azimuth>340 && azimuth<360)) &&(equiposOrdenados.get(0).equals("Andén") || equiposOrdenados.get(1).equals("Andén"))) {
                 sugerencia = audios.get(28).getAudio();
-            } else if (azimuth > 295 && azimuth < 360 ) {
+            } else if (azimuth > 275 && azimuth < 340 ) {
                 sugerencia = audios.get(29).getAudio();
-            } else if (azimuth > 50 && azimuth < 100 ) {
+            } else if (azimuth > 50 && azimuth < 140 ) {
                 if (equipoCandy < equipoRemolacha ) {
                     sugerencia = audios.get(30).getAudio();
                 } else {
                     sugerencia = audios.get(31).getAudio();
                 }
             }
-            else if(equipoVerde<143){
+            else if(equipoVerde<147){
                 sugerencia = audios.get(32).getAudio();
             }
             equiposOrdenados.clear();
